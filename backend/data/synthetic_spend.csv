@@ -1,0 +1,301 @@
+Date,Vendor,Category,Amount,Department
+2024-01-01,ABM Industries,Facilities,10549.59,HR
+2024-01-02,McKinsey,Consulting,47921.72,Finance
+2024-01-04,Slack,Software Licenses,1214.88,Marketing
+2024-01-05,Accenture,Consulting,45450.88,Operations
+2024-01-05,ABM Industries,Facilities,9357.08,Marketing
+2024-01-06,Marriott,Travel,2679.81,HR
+2024-01-07,DigitalOcean,Cloud Services,8823.93,Engineering
+2024-01-13,JLL,Facilities,4331.69,Finance
+2024-01-13,JLL,Facilities,10580.43,Sales
+2024-01-17,Hilton,Travel,1311.09,Marketing
+2024-01-19,Facebook Ads,Marketing,16857.31,HR
+2024-01-19,Facebook Ads,Marketing,3398.68,Finance
+2024-01-22,CBRE,Facilities,6513.65,HR
+2024-01-23,McKinsey,Consulting,19317.93,Finance
+2024-01-23,McKinsey,Consulting,37725.93,HR
+2024-01-24,Microsoft Azure,Cloud Services,4050.22,Engineering
+2024-01-25,DigitalOcean,Cloud Services,12985.99,Engineering
+2024-01-28,PwC,Consulting,35301.4,Finance
+2024-01-28,Hilton,Travel,1100.4,Finance
+2024-01-29,Staples,Office Supplies,622.07,Marketing
+2024-02-04,AWS,Cloud Services,10805.11,HR
+2024-02-05,Accenture,Consulting,48510.01,Marketing
+2024-02-05,HubSpot,Software Licenses,6293.62,Operations
+2024-02-06,Google Cloud,Cloud Services,1432.99,Sales
+2024-02-08,Deloitte,Consulting,47527.29,Engineering
+2024-02-10,Office Depot,Office Supplies,1717.87,Marketing
+2024-02-11,United Airlines,Travel,2212.28,HR
+2024-02-11,PwC,Consulting,19495.03,Engineering
+2024-02-16,Marriott,Travel,1298.84,Engineering
+2024-02-16,HubSpot,Software Licenses,3584.98,Operations
+2024-02-16,Zoom Video,Software Licenses,1990.08,Sales
+2024-02-17,Deloitte,Consulting,14838.71,Engineering
+2024-02-17,PwC,Consulting,18240.6,Engineering
+2024-02-17,Office Depot Online,Office Supplies,488.17,Finance
+2024-02-19,Facebook Ads,Marketing,18164.67,Operations
+2024-02-20,McKinsey,Consulting,49141.75,Marketing
+2024-02-24,Staples Express,Office Supplies,895.37,Finance
+2024-02-26,Marriott,Travel,3373.08,Sales
+2024-02-28,United Airlines,Travel,3472.21,Operations
+2024-02-28,OfficeMax,Office Supplies,1653.13,Finance
+2024-02-28,DigitalOcean,Cloud Services,11877.76,HR
+2024-02-28,Deloitte,Consulting,43375.67,Operations
+2024-02-29,Cushman & Wakefield,Facilities,13401.5,Engineering
+2024-02-29,Zoom Video,Software Licenses,1290.26,Finance
+2024-02-29,OfficeMax,Office Supplies,239.52,Finance
+2024-03-01,CBRE,Facilities,10420.23,Finance
+2024-03-02,Office Depot,Office Supplies,1498.62,Marketing
+2024-03-08,McKinsey,Consulting,40393.08,Sales
+2024-03-09,CBRE,Facilities,12418.42,Finance
+2024-03-11,Microsoft 365,Software Licenses,1376.48,Engineering
+2024-03-13,Mailchimp,Marketing,15078.41,Engineering
+2024-03-14,Deloitte,Consulting,23449.04,Operations
+2024-03-15,United Airlines,Travel,4940.13,Marketing
+2024-03-16,Microsoft Azure,Cloud Services,13128.86,Marketing
+2024-03-20,Mailchimp,Marketing,17822.86,HR
+2024-03-21,PwC,Consulting,21652.39,Marketing
+2024-03-22,JLL,Facilities,12235.87,Marketing
+2024-03-22,Facebook Ads,Marketing,6904.25,Operations
+2024-03-23,Zoom Video,Software Licenses,2540.51,Engineering
+2024-03-24,Facebook Ads,Marketing,19547.91,Sales
+2024-03-25,ABM Industries,Facilities,12926.57,Operations
+2024-03-26,Slack Technologies,Software Licenses,2445.6,Marketing
+2024-03-26,Staples,Office Supplies,1403.3,Finance
+2024-03-27,DigitalOcean,Cloud Services,11058.67,Operations
+2024-03-30,JLL,Facilities,3026.59,Sales
+2024-03-30,Google Cloud,Cloud Services,4782.61,Engineering
+2024-04-01,HubSpot Marketing,Marketing,10645.95,HR
+2024-04-03,McKinsey,Consulting,17534.53,Finance
+2024-04-07,Mailchimp,Marketing,6637.45,Sales
+2024-04-07,Delta Airlines,Travel,4624.97,Finance
+2024-04-08,Marriott,Travel,3581.94,HR
+2024-04-08,CBRE,Facilities,4472.72,Sales
+2024-04-11,PwC,Consulting,8419.84,Operations
+2024-04-18,Office Depot Online,Office Supplies,351.72,HR
+2024-04-19,Staples,Office Supplies,1036.48,HR
+2024-04-19,McKinsey,Consulting,7890.3,Operations
+2024-04-20,JLL,Facilities,11601.86,Sales
+2024-04-21,Google Ads,Marketing,9835.65,HR
+2024-04-22,Hilton,Travel,4987.16,Marketing
+2024-04-22,CBRE,Facilities,4286.53,Finance
+2024-04-22,Facebook Ads,Marketing,6185.77,Finance
+2024-04-25,Enterprise Rent-A-Car,Travel,3923.33,HR
+2024-04-26,Office Depot,Office Supplies,753.72,Marketing
+2024-04-27,HubSpot Marketing,Marketing,16614.25,Engineering
+2024-04-30,Office Depot Online,Office Supplies,1280.76,Engineering
+2024-05-01,Google Ads,Marketing,4159.91,Engineering
+2024-05-01,PwC,Consulting,22161.39,Engineering
+2024-05-02,OfficeMax,Office Supplies,162.95,Marketing
+2024-05-02,Office Depot Online,Office Supplies,296.13,Sales
+2024-05-02,Google Ads,Marketing,4302.46,Sales
+2024-05-05,Delta Airlines,Travel,984.33,HR
+2024-05-05,Google Cloud,Cloud Services,7029.77,Engineering
+2024-05-05,Zoom,Software Licenses,2348.89,Sales
+2024-05-06,Hilton,Travel,1278.55,Engineering
+2024-05-06,Google Ads,Marketing,4787.85,Engineering
+2024-05-08,Microsoft 365,Software Licenses,7261.62,Finance
+2024-05-08,Microsoft Azure,Cloud Services,12393.1,HR
+2024-05-09,Accenture,Consulting,42570.99,Finance
+2024-05-12,Mailchimp,Marketing,15283.76,Finance
+2024-05-13,McKinsey,Consulting,22059.67,Engineering
+2024-05-15,Mailchimp,Marketing,3652.98,Sales
+2024-05-15,Google Cloud,Cloud Services,7486.67,Sales
+2024-05-15,Google Ads,Marketing,3193.14,Sales
+2024-05-15,HubSpot,Software Licenses,498.41,HR
+2024-05-17,Cushman & Wakefield,Facilities,2860.45,Finance
+2024-05-17,Google Ads,Marketing,11948.69,Operations
+2024-05-19,Office Depot Online,Office Supplies,599.42,Sales
+2024-05-19,Microsoft 365,Software Licenses,6677.69,HR
+2024-05-19,Salesforce,Software Licenses,5681.05,Sales
+2024-05-19,Hilton,Travel,1234.73,Finance
+2024-05-20,Google Ads,Marketing,5652.95,Engineering
+2024-05-20,AWS,Cloud Services,11463.12,Sales
+2024-05-21,Delta Airlines,Travel,3908.84,Engineering
+2024-05-22,CBRE,Facilities,7894.33,Finance
+2024-05-22,JLL,Facilities,13461.21,Engineering
+2024-05-29,Staples,Office Supplies,1409.96,HR
+2024-05-29,DigitalOcean,Cloud Services,9454.37,Operations
+2024-05-30,Deloitte,Consulting,42323.21,HR
+2024-05-31,Zoom,Software Licenses,4524.42,Operations
+2024-05-31,Slack Technologies,Software Licenses,6023.16,Finance
+2024-06-01,PwC,Consulting,43707.5,Finance
+2024-06-01,OfficeMax,Office Supplies,1683.08,Operations
+2024-06-02,Accenture,Consulting,33752.24,HR
+2024-06-03,Accenture,Consulting,13964.76,Finance
+2024-06-05,ABM Industries,Facilities,12666.97,Marketing
+2024-06-05,Mailchimp,Marketing,5776.67,Marketing
+2024-06-07,OfficeMax,Office Supplies,1350.44,HR
+2024-06-07,Office Depot,Office Supplies,488.05,Operations
+2024-06-08,Google Ads,Marketing,3053.88,Sales
+2024-06-09,Hilton,Travel,2294.69,Marketing
+2024-06-09,HubSpot Marketing,Marketing,13604.36,HR
+2024-06-09,OfficeMax,Office Supplies,1346.96,Finance
+2024-06-10,Enterprise Rent-A-Car,Travel,4686.59,HR
+2024-06-10,HubSpot Marketing,Marketing,18651.35,Finance
+2024-06-14,United Airlines,Travel,2545.31,HR
+2024-06-14,OfficeMax,Office Supplies,276.05,Marketing
+2024-06-15,Salesforce,Software Licenses,1618.35,Finance
+2024-06-15,Enterprise Rent-A-Car,Travel,2028.34,Operations
+2024-06-16,Office Depot Online,Office Supplies,1834.75,HR
+2024-06-18,AWS,Cloud Services,1909.29,Engineering
+2024-06-19,Salesforce,Software Licenses,6214.73,Engineering
+2024-06-19,AWS,Cloud Services,5039.69,Engineering
+2024-06-21,HubSpot,Software Licenses,997.24,Sales
+2024-06-21,Deloitte,Consulting,35099.31,Finance
+2024-06-21,DigitalOcean,Cloud Services,14422.29,Marketing
+2024-06-23,Marriott,Travel,735.45,Operations
+2024-06-23,Google Cloud,Cloud Services,5693.81,Marketing
+2024-06-23,PwC,Consulting,13296.37,Finance
+2024-06-25,Deloitte,Consulting,32167.67,Marketing
+2024-06-27,Deloitte,Consulting,23375.66,Finance
+2024-06-28,McKinsey,Consulting,43041.8,Engineering
+2024-07-02,Slack,Software Licenses,1374.29,Engineering
+2024-07-02,Microsoft 365,Software Licenses,672.29,Operations
+2024-07-02,Office Depot,Office Supplies,1590.47,Engineering
+2024-07-06,DigitalOcean,Cloud Services,2352.21,HR
+2024-07-08,Cushman & Wakefield,Facilities,6618.52,Sales
+2024-07-08,Salesforce,Software Licenses,1894.7,Operations
+2024-07-13,DigitalOcean,Cloud Services,13417.44,Operations
+2024-07-18,DigitalOcean,Cloud Services,5649.07,Engineering
+2024-07-23,Accenture,Consulting,23719.53,Finance
+2024-07-24,PwC,Consulting,45609.93,Sales
+2024-07-25,Google Ads,Marketing,14836.06,Engineering
+2024-07-27,OfficeMax,Office Supplies,1948.98,HR
+2024-07-27,AWS,Cloud Services,9859.69,Sales
+2024-07-28,Office Depot,Office Supplies,928.48,Engineering
+2024-07-31,Deloitte,Consulting,44876.16,Finance
+2024-08-02,Slack,Software Licenses,4398.12,Finance
+2024-08-04,Microsoft Azure,Cloud Services,12349.71,Operations
+2024-08-04,ABM Industries,Facilities,11055.69,Marketing
+2024-08-04,Slack Technologies,Software Licenses,6971.12,Operations
+2024-08-06,Staples Express,Office Supplies,1387.89,Finance
+2024-08-07,Staples,Office Supplies,314.61,Operations
+2024-08-08,Enterprise Rent-A-Car,Travel,811.74,Sales
+2024-08-08,Delta Airlines,Travel,535.87,Marketing
+2024-08-08,Slack,Software Licenses,6328.92,Sales
+2024-08-09,Office Depot Online,Office Supplies,1482.34,Engineering
+2024-08-09,CBRE,Facilities,3255.34,Engineering
+2024-08-11,HubSpot,Software Licenses,5151.32,HR
+2024-08-13,Marriott,Travel,678.62,Engineering
+2024-08-13,Google Ads,Marketing,1633.93,Marketing
+2024-08-14,HubSpot Marketing,Marketing,11481.93,Sales
+2024-08-14,Marriott,Travel,2322.37,Finance
+2024-08-16,Hilton,Travel,4506.6,HR
+2024-08-16,Hilton,Travel,2785.19,Sales
+2024-08-17,Mailchimp,Marketing,12196.05,Sales
+2024-08-19,Facebook Ads,Marketing,17873.73,Finance
+2024-08-20,HubSpot Marketing,Marketing,2352.42,Operations
+2024-08-20,Delta Airlines,Travel,1980.86,Finance
+2024-08-20,HubSpot,Software Licenses,915.05,Engineering
+2024-08-20,Enterprise Rent-A-Car,Travel,2626.65,Marketing
+2024-08-23,CBRE,Facilities,8970.97,Operations
+2024-08-24,Delta Airlines,Travel,3261.94,Sales
+2024-08-25,AWS,Cloud Services,18476.26,Operations
+2024-08-26,Accenture,Consulting,23709.84,HR
+2024-08-27,PwC,Consulting,28810.15,HR
+2024-08-27,Slack Technologies,Software Licenses,1211.14,Engineering
+2024-08-28,Staples Express,Office Supplies,483.75,Engineering
+2024-08-28,Facebook Ads,Marketing,15848.98,Engineering
+2024-08-29,Zoom,Software Licenses,2101.1,Finance
+2024-08-30,DigitalOcean,Cloud Services,16481.76,Sales
+2024-08-30,HubSpot,Software Licenses,723.64,Operations
+2024-08-31,JLL,Facilities,10396.74,Operations
+2024-09-01,Office Depot Online,Office Supplies,61.5,Finance
+2024-09-05,United Airlines,Travel,4116.91,Engineering
+2024-09-05,Google Cloud,Cloud Services,5049.0,Operations
+2024-09-05,Cushman & Wakefield,Facilities,10147.73,HR
+2024-09-05,Zoom,Software Licenses,1147.12,Operations
+2024-09-06,Zoom Video,Software Licenses,7004.59,Operations
+2024-09-11,Google Ads,Marketing,16823.94,HR
+2024-09-16,OfficeMax,Office Supplies,1237.49,Operations
+2024-09-16,Accenture,Consulting,34139.45,Engineering
+2024-09-16,ABM Industries,Facilities,5473.24,Marketing
+2024-09-17,JLL,Facilities,3041.45,Engineering
+2024-09-17,Slack,Software Licenses,3317.49,Operations
+2024-09-19,PwC,Consulting,31714.97,Marketing
+2024-09-22,JLL,Facilities,10469.62,Finance
+2024-09-23,Staples Express,Office Supplies,1854.87,Engineering
+2024-09-25,Zoom Video,Software Licenses,4854.97,HR
+2024-09-27,Delta Airlines,Travel,4387.68,Marketing
+2024-09-28,Staples,Office Supplies,469.51,Operations
+2024-09-30,Salesforce,Software Licenses,1187.35,Operations
+2024-09-30,OfficeMax,Office Supplies,791.02,Operations
+2024-10-01,Deloitte,Consulting,10561.49,Marketing
+2024-10-02,Google Cloud,Cloud Services,17011.83,HR
+2024-10-03,Google Cloud,Cloud Services,20772.34,Sales
+2024-10-03,Deloitte,Consulting,7343.85,Operations
+2024-10-03,Accenture,Consulting,27220.78,HR
+2024-10-04,Office Depot Online,Office Supplies,168.87,Operations
+2024-10-05,DigitalOcean,Cloud Services,5451.62,Engineering
+2024-10-05,Slack,Software Licenses,3142.24,HR
+2024-10-06,AWS,Cloud Services,2552.88,Operations
+2024-10-06,Accenture,Consulting,12108.9,Operations
+2024-10-07,Google Cloud,Cloud Services,18254.06,Finance
+2024-10-08,AWS,Cloud Services,2783.54,Finance
+2024-10-08,Accenture,Consulting,19885.61,Finance
+2024-10-08,Zoom Video,Software Licenses,486.24,Finance
+2024-10-08,Office Depot,Office Supplies,305.48,Marketing
+2024-10-10,Salesforce,Software Licenses,1994.89,HR
+2024-10-10,CBRE,Facilities,5891.92,Operations
+2024-10-10,Microsoft Azure,Cloud Services,5080.48,Engineering
+2024-10-11,HubSpot Marketing,Marketing,2139.64,Sales
+2024-10-12,Mailchimp,Marketing,5734.77,Engineering
+2024-10-12,Office Depot,Office Supplies,1540.66,Engineering
+2024-10-14,Enterprise Rent-A-Car,Travel,1154.42,Engineering
+2024-10-15,Office Depot,Office Supplies,1900.8,Sales
+2024-10-18,DigitalOcean,Cloud Services,5901.67,Engineering
+2024-10-18,Cushman & Wakefield,Facilities,13975.5,HR
+2024-10-20,Salesforce,Software Licenses,1964.04,Marketing
+2024-10-22,United Airlines,Travel,1112.38,Finance
+2024-10-22,PwC,Consulting,33325.06,Engineering
+2024-10-26,HubSpot Marketing,Marketing,9140.24,Operations
+2024-10-26,Salesforce,Software Licenses,3918.95,Engineering
+2024-10-26,DigitalOcean,Cloud Services,20615.95,Finance
+2024-10-28,Google Cloud,Cloud Services,14626.37,Operations
+2024-10-30,AWS,Cloud Services,12591.34,Finance
+2024-10-30,PwC,Consulting,17077.8,Operations
+2024-11-01,HubSpot Marketing,Marketing,2614.18,HR
+2024-11-03,Google Ads,Marketing,6936.53,Marketing
+2024-11-06,Slack Technologies,Software Licenses,6455.07,Sales
+2024-11-08,DigitalOcean,Cloud Services,15283.09,HR
+2024-11-09,HubSpot Marketing,Marketing,16485.12,Finance
+2024-11-11,Google Ads,Marketing,8754.2,Finance
+2024-11-12,Office Depot,Office Supplies,147.04,Sales
+2024-11-13,Accenture,Consulting,7710.36,HR
+2024-11-14,Staples,Office Supplies,1996.99,Finance
+2024-11-16,Google Ads,Marketing,5009.48,Sales
+2024-11-16,Microsoft 365,Software Licenses,3647.92,Finance
+2024-11-20,CBRE,Facilities,7506.49,Engineering
+2024-11-20,Microsoft 365,Software Licenses,5030.23,Operations
+2024-11-25,Cushman & Wakefield,Facilities,14532.34,Finance
+2024-11-28,Zoom,Software Licenses,3112.68,Operations
+2024-12-01,Marriott,Travel,2596.31,Sales
+2024-12-01,McKinsey,Consulting,35943.01,Sales
+2024-12-02,Deloitte,Consulting,42325.74,HR
+2024-12-03,JLL,Facilities,8178.67,Sales
+2024-12-03,AWS,Cloud Services,10462.87,Engineering
+2024-12-04,OfficeMax,Office Supplies,876.83,Finance
+2024-12-05,McKinsey,Consulting,31170.0,Marketing
+2024-12-05,PwC,Consulting,40657.71,Finance
+2024-12-08,Slack Technologies,Software Licenses,6939.7,Finance
+2024-12-09,Enterprise Rent-A-Car,Travel,786.71,Marketing
+2024-12-10,Zoom Video,Software Licenses,2244.86,Operations
+2024-12-11,Accenture,Consulting,15521.99,Engineering
+2024-12-12,OfficeMax,Office Supplies,1820.65,HR
+2024-12-15,HubSpot Marketing,Marketing,13312.67,Operations
+2024-12-15,ABM Industries,Facilities,5130.79,HR
+2024-12-17,Google Cloud,Cloud Services,15029.5,Sales
+2024-12-18,Accenture,Consulting,30062.74,Operations
+2024-12-18,Deloitte,Consulting,18684.1,Finance
+2024-12-19,McKinsey,Consulting,14051.8,HR
+2024-12-20,Slack,Software Licenses,3300.37,HR
+2024-12-22,Delta Airlines,Travel,2043.1,Operations
+2024-12-22,Facebook Ads,Marketing,15677.14,Engineering
+2024-12-23,CBRE,Facilities,7493.99,Sales
+2024-12-23,Slack Technologies,Software Licenses,2062.68,Sales
+2024-12-24,Microsoft 365,Software Licenses,2502.8,Marketing
+2024-12-26,DigitalOcean,Cloud Services,7574.07,HR
+2024-12-28,AWS,Cloud Services,14959.03,Engineering
+2024-12-28,Zoom Video,Software Licenses,1393.33,Finance
+2024-12-31,Zoom,Software Licenses,1907.57,Engineering

@@ -20,7 +20,7 @@ async def analyze(session_id: str):
         logger.warning("Analyze request for unknown session: %s", session_id)
         raise HTTPException(status_code=404, detail="Session not found")
 
-    summary = session["summary"]
+    summary = session.get("active_summary") or session["summary"]
     preferences = build_preference_context(session_id)
     if preferences:
         logger.info("Session %s has preference context (%d chars)", session_id, len(preferences))

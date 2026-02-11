@@ -29,6 +29,11 @@ class AgentResult(BaseModel):
     summary: str
 
 
+class ReportRequest(BaseModel):
+    agents: list[AgentResult]
+    voted_recommendation_ids: list[str] = []
+
+
 class VoteRequest(BaseModel):
     session_id: str
     agent_type: str

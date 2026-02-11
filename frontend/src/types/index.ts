@@ -49,6 +49,13 @@ export interface UploadResponse {
   column_stats: ColumnStats[];
 }
 
+export interface AgentResult {
+  agent_type: string;
+  recommendations: Recommendation[];
+  total_savings: number;
+  summary: string;
+}
+
 export interface SSEEvent {
   type?: string;
   agent?: AgentType;

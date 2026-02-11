@@ -8,6 +8,7 @@ import { sessionIdAtom, agentAtomFamily, arenaStartedAtom } from "@/store/atoms"
 import { connectSSE } from "@/lib/sse";
 import { EASE, ANIM } from "@/lib/constants";
 import ArenaBoard from "@/components/ArenaBoard";
+import ExportReportButton from "@/components/ExportReportButton";
 import type { AgentType, SSEEvent } from "@/types";
 
 const AGENT_TYPES: AgentType[] = ["conservative", "aggressive", "balanced"];
@@ -134,16 +135,19 @@ function ArenaContent() {
             Analyzing procurement data across three strategies
           </p>
         </div>
-        <motion.button
-          onClick={() => {
-            setArenaStarted(false);
-            router.push("/upload");
-          }}
-          className="text-sm text-zinc-500 hover:text-zinc-700 transition-all px-4 py-2 rounded-lg border border-zinc-200 hover:border-zinc-300 bg-white shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_4px_0_rgb(0_0_0/0.06)]"
-          {...ANIM.buttonTap}
-        >
-          New Analysis
-        </motion.button>
+        <div className="flex items-center gap-3">
+          <ExportReportButton />
+          <motion.button
+            onClick={() => {
+              setArenaStarted(false);
+              router.push("/upload");
+            }}
+            className="text-sm text-zinc-500 hover:text-zinc-700 transition-all px-4 py-2 rounded-lg border border-zinc-200 hover:border-zinc-300 bg-white shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_4px_0_rgb(0_0_0/0.06)]"
+            {...ANIM.buttonTap}
+          >
+            New Analysis
+          </motion.button>
+        </div>
       </motion.div>
       <motion.div {...ANIM.fadeInUp} transition={{ duration: 0.5, delay: 0.15, ease: EASE }}>
         <ArenaBoard />

@@ -123,6 +123,7 @@ async def confirm_mappings(req: ConfirmMappingsRequest):
     session["csv_text"] = csv_text
     session["mapped_df"] = df
     session["summary"] = summary
+    session["column_mappings"] = req.mappings
 
     logger.info(
         "Mappings confirmed for session %s — $%.2f total spend",
@@ -143,8 +144,9 @@ async def get_summary(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # When no date filters, return the stored full summary
+    # When no date filters, clear any active filter and return the stored full summary
     if not start_date and not end_date:
+        session.pop("active_summary", None)
         summary = session.get("summary")
         if not summary:
             raise HTTPException(status_code=404, detail="Summary not available")
@@ -172,7 +174,9 @@ async def get_summary(
     if len(df) == 0:
         raise HTTPException(status_code=400, detail="No data in selected date range")
 
-    return summarize_dataframe(df)
+    filtered_summary = summarize_dataframe(df)
+    session["active_summary"] = filtered_summary
+    return filtered_summary
 
 
 @router.delete("/api/sessions/{session_id}")

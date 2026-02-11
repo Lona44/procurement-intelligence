@@ -3,7 +3,7 @@ set -e
 
 echo "Running pre-commit checks..."
 
-# Backend: Ruff lint + format
+# Backend: Ruff lint + format + mypy
 if command -v ruff &>/dev/null; then
   echo "  Backend: ruff check"
   ruff check backend/app/
@@ -11,6 +11,13 @@ if command -v ruff &>/dev/null; then
   ruff format --check backend/app/
 else
   echo "  Backend: ruff not found, skipping (pip install ruff)"
+fi
+
+if command -v mypy &>/dev/null; then
+  echo "  Backend: mypy"
+  mypy backend/app/ --ignore-missing-imports
+else
+  echo "  Backend: mypy not found, skipping (pip install mypy pydantic[mypy])"
 fi
 
 # Frontend: lint + typecheck + format

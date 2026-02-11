@@ -1,4 +1,3 @@
-import type { AgentResult } from "@/types";
 import { API_BASE } from "./constants";
 
 export async function uploadCSV(
@@ -105,19 +104,8 @@ export async function confirmMappings(sessionId: string, mappings: Record<string
   return res.json();
 }
 
-export async function exportReport(
-  sessionId: string,
-  agents: AgentResult[],
-  votedRecommendationIds: string[]
-): Promise<{ blob: Blob; filename: string }> {
-  const res = await fetch(`${API_BASE}/api/report/${sessionId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      agents,
-      voted_recommendation_ids: votedRecommendationIds,
-    }),
-  });
+export async function exportReport(sessionId: string): Promise<{ blob: Blob; filename: string }> {
+  const res = await fetch(`${API_BASE}/api/report/${sessionId}`);
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: "Report generation failed" }));

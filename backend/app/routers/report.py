@@ -5,16 +5,16 @@ import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 
-from app.models.schemas import DataSummary, ReportRequest
+from app.models.schemas import AgentResult, DataSummary
 from app.services.report_generator import generate_report
-from app.services.session_store import get_session
+from app.services.session_store import get_session, get_voted_recommendation_ids
 
 logger = logging.getLogger("arena.report")
 router = APIRouter()
 
 
-@router.post("/api/report/{session_id}")
-async def export_report(session_id: str, req: ReportRequest):
+@router.get("/api/report/{session_id}")
+async def export_report(session_id: str):
     session = get_session(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -23,8 +23,15 @@ async def export_report(session_id: str, req: ReportRequest):
     if not summary_data:
         raise HTTPException(status_code=400, detail="No summary available for this session")
 
+    agent_results_raw: dict = session.get("agent_results", {})
+    if not agent_results_raw:
+        raise HTTPException(status_code=400, detail="No agent results yet — run analysis first")
+
     # summary_data may already be a DataSummary or a dict (depends on code path)
     summary = summary_data if isinstance(summary_data, DataSummary) else DataSummary(**summary_data)
+
+    agents = [AgentResult(**result) for result in agent_results_raw.values()]
+    voted_ids = get_voted_recommendation_ids(session_id)
 
     column_mappings: dict[str, str] = session.get("column_mappings", {})
     raw_columns: list[str] = session.get("raw_columns", [])
@@ -39,8 +46,8 @@ async def export_report(session_id: str, req: ReportRequest):
         summary=summary,
         column_mappings=column_mappings,
         raw_columns=raw_columns,
-        agents=req.agents,
-        voted_ids=req.voted_recommendation_ids,
+        agents=agents,
+        voted_ids=voted_ids,
     )
 
     safe_name = filename.rsplit(".", 1)[0] if "." in filename else filename

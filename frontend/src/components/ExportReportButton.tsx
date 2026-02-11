@@ -3,10 +3,10 @@
 import { useState, useCallback } from "react";
 import { useAtom } from "jotai";
 import { motion } from "framer-motion";
-import { sessionIdAtom, agentAtomFamily, votedRecsAtom } from "@/store/atoms";
+import { sessionIdAtom, agentAtomFamily } from "@/store/atoms";
 import { exportReport } from "@/lib/api";
 import { ANIM } from "@/lib/constants";
-import type { AgentType, AgentResult } from "@/types";
+import type { AgentType } from "@/types";
 
 const AGENT_TYPES: AgentType[] = ["conservative", "aggressive", "balanced"];
 
@@ -15,7 +15,6 @@ export default function ExportReportButton() {
   const [conservative] = useAtom(agentAtomFamily("conservative"));
   const [aggressive] = useAtom(agentAtomFamily("aggressive"));
   const [balanced] = useAtom(agentAtomFamily("balanced"));
-  const [votedRecs] = useAtom(votedRecsAtom);
   const [loading, setLoading] = useState(false);
 
   const allComplete = AGENT_TYPES.every((type) => {
@@ -28,16 +27,7 @@ export default function ExportReportButton() {
 
     setLoading(true);
     try {
-      const agents: AgentResult[] = [conservative, aggressive, balanced].map((a) => ({
-        agent_type: a.type,
-        recommendations: a.recommendations,
-        total_savings: a.total_savings,
-        summary: a.summary,
-      }));
-
-      const votedIds = votedRecs.map((v) => v.recommendationId);
-
-      const { blob, filename } = await exportReport(sessionId, agents, votedIds);
+      const { blob, filename } = await exportReport(sessionId);
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -52,7 +42,7 @@ export default function ExportReportButton() {
     } finally {
       setLoading(false);
     }
-  }, [sessionId, loading, conservative, aggressive, balanced, votedRecs]);
+  }, [sessionId, loading]);
 
   if (!allComplete) return null;
 

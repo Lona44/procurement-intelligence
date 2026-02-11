@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { sessionIdAtom, arenaStartedAtom } from "@/store/atoms";
-import { getSessions, deleteSession } from "@/lib/api";
+import { getSessions, deleteSession, exportReport } from "@/lib/api";
 
 interface Session {
   session_id: string;
@@ -14,6 +14,7 @@ interface Session {
   row_count: number;
   total_spend: number;
   vote_count: number;
+  has_report: boolean;
 }
 
 export default function SessionList() {
@@ -41,6 +42,23 @@ export default function SessionList() {
       setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
     } catch (err) {
       console.error("Failed to delete session:", err);
+    }
+  }, []);
+
+  const handleDownload = useCallback(async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      const { blob, filename } = await exportReport(sessionId);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download report:", err);
     }
   }, []);
 
@@ -93,25 +111,48 @@ export default function SessionList() {
               </div>
             </button>
 
-            <button
-              onClick={(e) => handleDelete(e, s.session_id)}
-              className="absolute top-3 right-3 p-1 rounded-md text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
-              title="Delete session"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {s.has_report && (
+                <button
+                  onClick={(e) => handleDownload(e, s.session_id)}
+                  className="p-1 rounded-md text-zinc-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  title="Download PDF report"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 10v6m0 0l-3-3m3 3l3-3" />
+                    <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={(e) => handleDelete(e, s.session_id)}
+                className="p-1 rounded-md text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                title="Delete session"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
           </motion.div>
         ))}
       </div>

@@ -107,6 +107,7 @@ def list_sessions() -> list[dict[str, Any]]:
                 "row_count": summary.row_count if summary else 0,
                 "total_spend": summary.total_spend if summary else 0,
                 "vote_count": vote_count,
+                "has_report": bool(session.get("agent_results")),
             }
         )
     return results
@@ -114,6 +115,12 @@ def list_sessions() -> list[dict[str, Any]]:
 
 def get_votes(session_id: str) -> dict[str, int]:
     return _votes.get(session_id, {"conservative": 0, "aggressive": 0, "balanced": 0})
+
+
+def get_voted_recommendation_ids(session_id: str) -> list[str]:
+    """Return just the recommendation IDs that have been voted on."""
+    voted = _voted_recommendations.get(session_id, [])
+    return [v["recommendation_id"] for v in voted]
 
 
 def build_preference_context(session_id: str) -> str:

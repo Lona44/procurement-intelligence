@@ -1,12 +1,13 @@
 """SSE streaming analysis endpoint using LangGraph."""
+
 import json
 import logging
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from app.services.session_store import get_session, build_preference_context
 from app.agents.base import build_arena_graph
+from app.services.session_store import build_preference_context, get_session
 
 logger = logging.getLogger("arena.analyze")
 router = APIRouter()
@@ -36,7 +37,7 @@ async def analyze(session_id: str):
 
         try:
             async for chunk in graph.astream(initial_state, stream_mode="updates"):
-                for node_name, node_output in chunk.items():
+                for _node_name, node_output in chunk.items():
                     for event in node_output.get("events", []):
                         if event.get("status") == "complete":
                             agent = event.get("agent", "?")

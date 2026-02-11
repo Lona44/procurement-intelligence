@@ -1,19 +1,24 @@
 """Agent orchestration using LangGraph for parallel agent execution."""
-import json
+
 import asyncio
+import json
 import logging
 import operator
 from typing import Annotated
 
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import END, START, StateGraph
 from openai import AsyncOpenAI
 from typing_extensions import TypedDict
 
-from app.config import (
-    OPENAI_API_KEY, OPENAI_MODEL, OPENAI_TEMPERATURE,
-    MOCK_AGENTS, THINKING_STEP_BASE_DELAY, THINKING_STEP_JITTER,
-)
 from app.agents.prompts import AGENT_PROMPTS
+from app.config import (
+    MOCK_AGENTS,
+    OPENAI_API_KEY,
+    OPENAI_MODEL,
+    OPENAI_TEMPERATURE,
+    THINKING_STEP_BASE_DELAY,
+    THINKING_STEP_JITTER,
+)
 from app.models.schemas import AgentResult, DataSummary
 
 logger = logging.getLogger("arena.agents")
@@ -23,12 +28,14 @@ logger = logging.getLogger("arena.agents")
 # LangGraph state
 # ---------------------------------------------------------------------------
 
+
 class ArenaState(TypedDict):
     """Shared state flowing through the arena graph.
 
     `events` uses operator.add so parallel branches can independently
     append without clobbering each other.
     """
+
     summary: dict
     preferences: str
     events: Annotated[list[dict], operator.add]
@@ -111,8 +118,16 @@ MOCK_RESULTS: dict[str, AgentResult] = {
                 "estimated_savings": 45000.00,
                 "confidence": 0.55,
                 "risk_level": "high",
-                "pros": ["Massive cost reduction", "Simplified architecture", "Better support tier"],
-                "cons": ["Migration risk", "Single point of failure", "Engineering effort required"],
+                "pros": [
+                    "Massive cost reduction",
+                    "Simplified architecture",
+                    "Better support tier",
+                ],
+                "cons": [
+                    "Migration risk",
+                    "Single point of failure",
+                    "Engineering effort required",
+                ],
             },
             {
                 "id": "a2",
@@ -121,7 +136,11 @@ MOCK_RESULTS: dict[str, AgentResult] = {
                 "estimated_savings": 65000.00,
                 "confidence": 0.50,
                 "risk_level": "high",
-                "pros": ["Dramatic cost reduction", "More specialized expertise", "Better engagement"],
+                "pros": [
+                    "Dramatic cost reduction",
+                    "More specialized expertise",
+                    "Better engagement",
+                ],
                 "cons": ["Relationship risk", "Unproven vendors", "Possible quality variance"],
             },
             {
@@ -142,7 +161,11 @@ MOCK_RESULTS: dict[str, AgentResult] = {
                 "confidence": 0.60,
                 "risk_level": "medium",
                 "pros": ["Immediate savings", "Environmental benefit", "Already have tools"],
-                "cons": ["Client relationship impact", "Employee satisfaction", "Cultural pushback"],
+                "cons": [
+                    "Client relationship impact",
+                    "Employee satisfaction",
+                    "Cultural pushback",
+                ],
             },
             {
                 "id": "a5",
@@ -212,6 +235,7 @@ MOCK_RESULTS: dict[str, AgentResult] = {
 # Node factories for the LangGraph
 # ---------------------------------------------------------------------------
 
+
 def _make_step_node(agent_type: str, step_index: int):
     """Return a graph node coroutine for one thinking step."""
     steps = THINKING_STEPS[agent_type]
@@ -220,7 +244,10 @@ def _make_step_node(agent_type: str, step_index: int):
 
     async def node(state: ArenaState) -> dict:
         # Simulate thinking time (varies per step to stagger agents)
-        delay = THINKING_STEP_BASE_DELAY + (hash(agent_type + step_text) % THINKING_STEP_JITTER) / THINKING_STEP_JITTER
+        delay = (
+            THINKING_STEP_BASE_DELAY
+            + (hash(agent_type + step_text) % THINKING_STEP_JITTER) / THINKING_STEP_JITTER
+        )
         await asyncio.sleep(delay)
         return {
             "events": [
@@ -248,8 +275,12 @@ def _make_analyze_node(agent_type: str):
             logger.info("Agent '%s' using mock results", agent_type)
             result = MOCK_RESULTS[agent_type]
         else:
-            logger.info("Agent '%s' calling OpenAI (%s)%s", agent_type, OPENAI_MODEL,
-                        " with preferences" if preferences else "")
+            logger.info(
+                "Agent '%s' calling OpenAI (%s)%s",
+                agent_type,
+                OPENAI_MODEL,
+                " with preferences" if preferences else "",
+            )
             try:
                 result = await _call_openai(agent_type, summary, preferences)
             except Exception as e:
@@ -275,6 +306,7 @@ def _make_analyze_node(agent_type: str):
 # ---------------------------------------------------------------------------
 # Graph builder
 # ---------------------------------------------------------------------------
+
 
 def build_arena_graph():
     """Build and compile the LangGraph that runs all 3 agents in parallel.
@@ -337,19 +369,19 @@ async def _call_openai(agent_type: str, summary: DataSummary, preferences: str =
 - Date Range: {summary.date_range}
 
 Top Vendors by Spend:
-{_format_list(summary.top_vendors, 'vendor', 'total_spend')}
+{_format_list(summary.top_vendors, "vendor", "total_spend")}
 
 Spend by Category:
-{_format_list(summary.category_breakdown, 'category', 'total_spend')}
+{_format_list(summary.category_breakdown, "category", "total_spend")}
 
 Spend by Department:
-{_format_list(summary.department_breakdown, 'department', 'total_spend')}
+{_format_list(summary.department_breakdown, "department", "total_spend")}
 
 Monthly Trends:
-{_format_list(summary.monthly_trends, 'month', 'total_spend')}
+{_format_list(summary.monthly_trends, "month", "total_spend")}
 
 Potential Duplicate Vendors Detected:
-{chr(10).join('- ' + d for d in summary.duplicate_vendors) if summary.duplicate_vendors else 'None detected'}
+{chr(10).join("- " + d for d in summary.duplicate_vendors) if summary.duplicate_vendors else "None detected"}
 """
 
     if preferences:

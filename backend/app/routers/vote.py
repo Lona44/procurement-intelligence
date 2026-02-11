@@ -1,4 +1,5 @@
 """Voting endpoints."""
+
 from fastapi import APIRouter
 
 from app.models.schemas import VoteRequest

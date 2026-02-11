@@ -1,18 +1,22 @@
 """Process uploaded CSV/XLSX data with Pandas to produce summaries for agents."""
-import pandas as pd
-from io import StringIO, BytesIO
+
 from difflib import SequenceMatcher
+from io import BytesIO, StringIO
+
+import pandas as pd
 
 from app.config import DUPLICATE_VENDOR_THRESHOLD, TOP_VENDORS_LIMIT
 from app.models.schemas import DataSummary
 
 
-def find_duplicate_vendors(vendors: list[str], threshold: float = DUPLICATE_VENDOR_THRESHOLD) -> list[str]:
+def find_duplicate_vendors(
+    vendors: list[str], threshold: float = DUPLICATE_VENDOR_THRESHOLD
+) -> list[str]:
     """Find vendor names that look like duplicates."""
     duplicates = []
     seen = set()
     for i, v1 in enumerate(vendors):
-        for v2 in vendors[i + 1:]:
+        for v2 in vendors[i + 1 :]:
             pair = tuple(sorted([v1, v2]))
             if pair in seen:
                 continue
@@ -47,7 +51,11 @@ def process_file(content: bytes, filename: str) -> tuple[pd.DataFrame, DataSumma
 
     date_min = df["date"].min()
     date_max = df["date"].max()
-    date_range = f"{date_min.strftime('%Y-%m-%d')} to {date_max.strftime('%Y-%m-%d')}" if pd.notna(date_min) else "N/A"
+    date_range = (
+        f"{date_min.strftime('%Y-%m-%d')} to {date_max.strftime('%Y-%m-%d')}"
+        if pd.notna(date_min)
+        else "N/A"
+    )
 
     top_vendors = (
         df.groupby("vendor")["amount"]

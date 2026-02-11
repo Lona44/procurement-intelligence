@@ -1,6 +1,6 @@
 """In-memory session and vote storage with preference learning."""
+
 import logging
-from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger("arena.store")
@@ -45,18 +45,20 @@ def add_vote(
 
     # Avoid duplicate votes on the same recommendation
     already_voted = any(
-        r["recommendation_id"] == recommendation_id
-        for r in _voted_recommendations[session_id]
+        r["recommendation_id"] == recommendation_id for r in _voted_recommendations[session_id]
     )
     if not already_voted:
-        _voted_recommendations[session_id].append({
-            "recommendation_id": recommendation_id,
-            "title": recommendation_title,
-            "description": recommendation_description,
-        })
+        _voted_recommendations[session_id].append(
+            {
+                "recommendation_id": recommendation_id,
+                "title": recommendation_title,
+                "description": recommendation_description,
+            }
+        )
         logger.info(
             "Preference recorded for session %s: '%s'",
-            session_id, recommendation_title,
+            session_id,
+            recommendation_title,
         )
 
     return _votes[session_id]
@@ -71,14 +73,16 @@ def list_sessions() -> list[dict[str, Any]]:
             continue
         summary = session.get("summary")
         vote_count = sum(get_votes(sid).values())
-        results.append({
-            "session_id": sid,
-            "filename": session.get("filename", "unknown.csv"),
-            "created_at": session.get("created_at", ""),
-            "row_count": summary.row_count if summary else 0,
-            "total_spend": summary.total_spend if summary else 0,
-            "vote_count": vote_count,
-        })
+        results.append(
+            {
+                "session_id": sid,
+                "filename": session.get("filename", "unknown.csv"),
+                "created_at": session.get("created_at", ""),
+                "row_count": summary.row_count if summary else 0,
+                "total_spend": summary.total_spend if summary else 0,
+                "vote_count": vote_count,
+            }
+        )
     return results
 
 

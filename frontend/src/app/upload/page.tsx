@@ -8,13 +8,20 @@ import { EASE, ANIM } from "@/lib/constants";
 
 export default function UploadPage() {
   return (
-    <main className="min-h-screen bg-grid flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-grid flex flex-col items-center justify-start pt-4 px-4">
       <div className="max-w-xl w-full space-y-10">
         <motion.div
           className="text-center space-y-4"
           {...ANIM.fadeInUp}
           transition={{ duration: 0.5, ease: EASE }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://cdn.dribbble.com/userupload/22227114/file/original-d1dff1c5d28f4206fe0382935e4c2d4a.gif"
+            alt="Agent Arena"
+            className="w-80 h-80 mx-auto object-contain rounded-2xl mix-blend-multiply -mb-4 opacity-0"
+            style={{ animation: "fade-in 1.2s ease 0.3s forwards" }}
+          />
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 border border-zinc-200 bg-white rounded-full px-3 py-1 mb-2 shadow-[0_1px_2px_0_rgb(0_0_0/0.04)] hover:border-zinc-300 hover:shadow-[0_1px_3px_0_rgb(0_0_0/0.06)] transition-all"

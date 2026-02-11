@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/node-20-green?style=flat-square&logo=node.js&logoColor=white" alt="Node" />
   <img src="https://img.shields.io/badge/next.js-14-black?style=flat-square&logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/fastapi-0.115-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <a href="https://github.com/your-org/agent-arena-battle/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/your-org/agent-arena-battle/ci.yml?branch=main&style=flat-square&label=CI" alt="CI" /></a>
+  <a href="https://github.com/Lona44/procurement-intelligence/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Lona44/procurement-intelligence/ci.yml?branch=main&style=flat-square&label=CI" alt="CI" /></a>
   <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" />
 </p>
 
@@ -70,8 +70,8 @@ Each agent independently analyzes your spend data using LangGraph-orchestrated w
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/your-org/agent-arena-battle.git
-cd agent-arena-battle
+git clone https://github.com/Lona44/procurement-intelligence.git
+cd procurement-intelligence
 ```
 
 **Backend:**

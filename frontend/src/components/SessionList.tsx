@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { sessionIdAtom, arenaStartedAtom } from "@/store/atoms";
-import { getSessions } from "@/lib/api";
+import { getSessions, deleteSession, exportReport } from "@/lib/api";
 
 interface Session {
   session_id: string;
@@ -14,6 +14,7 @@ interface Session {
   row_count: number;
   total_spend: number;
   vote_count: number;
+  has_report: boolean;
 }
 
 export default function SessionList() {
@@ -28,13 +29,40 @@ export default function SessionList() {
       .catch((err) => console.warn("[SessionList] Failed to load sessions:", err));
   }, []);
 
-  if (sessions.length === 0) return null;
-
   const handleRerun = (session: Session) => {
     setArenaStarted(false);
     setSessionId(session.session_id);
     router.push(`/preview?session=${session.session_id}`);
   };
+
+  const handleDelete = useCallback(async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      await deleteSession(sessionId);
+      setSessions((prev) => prev.filter((s) => s.session_id !== sessionId));
+    } catch (err) {
+      console.error("Failed to delete session:", err);
+    }
+  }, []);
+
+  const handleDownload = useCallback(async (e: React.MouseEvent, sessionId: string) => {
+    e.stopPropagation();
+    try {
+      const { blob, filename } = await exportReport(sessionId);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download report:", err);
+    }
+  }, []);
+
+  if (sessions.length === 0) return null;
 
   return (
     <div className="space-y-3">
@@ -43,46 +71,89 @@ export default function SessionList() {
       </h2>
       <div className="space-y-1.5">
         {sessions.map((s, i) => (
-          <motion.button
+          <motion.div
             key={s.session_id}
-            onClick={() => handleRerun(s)}
-            className="w-full text-left bg-white border border-zinc-200 rounded-lg px-4 py-3 transition-all duration-150 group shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_8px_-2px_rgb(0_0_0/0.08)] hover:border-zinc-300"
+            className="relative w-full bg-white border border-zinc-200 rounded-lg px-4 py-3 transition-all duration-150 group shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_8px_-2px_rgb(0_0_0/0.08)] hover:border-zinc-300"
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: i * 0.06 }}
-            whileHover={{ x: 4 }}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-zinc-700 font-medium group-hover:text-zinc-900 truncate transition-colors">
-                {s.filename}
-              </span>
-              <svg
-                className="w-4 h-4 text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0 ml-2"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </div>
-            <div className="flex items-center gap-3 mt-1.5 text-sm text-zinc-500">
-              <span>{s.row_count} rows</span>
-              <span className="w-1 h-1 rounded-full bg-zinc-300" />
-              <span>${s.total_spend.toLocaleString()}</span>
-              {s.vote_count > 0 && (
-                <>
-                  <span className="w-1 h-1 rounded-full bg-zinc-300" />
-                  <span className="text-indigo-500">
-                    {s.vote_count} {s.vote_count === 1 ? "vote" : "votes"}
-                  </span>
-                </>
+            <button onClick={() => handleRerun(s)} className="w-full text-left">
+              <div className="flex items-center justify-between pr-8">
+                <span className="text-sm text-zinc-700 font-medium group-hover:text-zinc-900 truncate transition-colors">
+                  {s.filename}
+                </span>
+                <svg
+                  className="w-4 h-4 text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0 ml-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+              <div className="flex items-center gap-3 mt-1.5 text-sm text-zinc-500">
+                <span>{s.row_count} rows</span>
+                <span className="w-1 h-1 rounded-full bg-zinc-300" />
+                <span>${s.total_spend.toLocaleString()}</span>
+                {s.vote_count > 0 && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-zinc-300" />
+                    <span className="text-indigo-500">
+                      {s.vote_count} {s.vote_count === 1 ? "vote" : "votes"}
+                    </span>
+                  </>
+                )}
+                <span className="ml-auto">{new Date(s.created_at).toLocaleDateString()}</span>
+              </div>
+            </button>
+
+            <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {s.has_report && (
+                <button
+                  onClick={(e) => handleDownload(e, s.session_id)}
+                  className="p-1 rounded-md text-zinc-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  title="Download PDF report"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 10v6m0 0l-3-3m3 3l3-3" />
+                    <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </button>
               )}
-              <span className="ml-auto">{new Date(s.created_at).toLocaleDateString()}</span>
+              <button
+                onClick={(e) => handleDelete(e, s.session_id)}
+                className="p-1 rounded-md text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                title="Delete session"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
-          </motion.button>
+          </motion.div>
         ))}
       </div>
     </div>

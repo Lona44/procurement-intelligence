@@ -60,19 +60,45 @@ class MonthlyTrend(BaseModel):
     total_spend: float
 
 
+class ColumnStats(BaseModel):
+    name: str
+    dtype: str  # "string", "numeric", "date", "boolean"
+    total_count: int
+    missing_count: int
+    missing_pct: float  # 0.0–100.0
+    unique_count: int
+    sample_values: list[str]
+    min_value: str | None = None
+    max_value: str | None = None
+
+
+class SuggestedMapping(BaseModel):
+    source_column: str
+    target_field: str  # "date", "vendor", "category", "amount", "department"
+    confidence: float  # 0.0–1.0
+
+
 class UploadResponse(BaseModel):
     session_id: str
+    filename: str
     row_count: int
-    total_spend: float
-    date_range: str
-    top_vendors: list[VendorSummary]
-    categories: list[CategorySummary]
+    columns: list[str]
+    suggested_mappings: list[SuggestedMapping]
+    column_stats: list[ColumnStats]
+
+
+class ConfirmMappingsRequest(BaseModel):
+    session_id: str
+    mappings: dict[str, str]  # { "date": "source_col", "vendor": "source_col", ... }
 
 
 class DataSummary(BaseModel):
     total_spend: float
     row_count: int
+    unique_vendor_count: int
     date_range: str
+    date_min: str | None = None
+    date_max: str | None = None
     top_vendors: list[VendorSummary]
     category_breakdown: list[CategorySummary]
     department_breakdown: list[DepartmentSummary]

@@ -51,7 +51,7 @@ export default function UploadPage() {
           transition={{ duration: 0.5, delay: 0.45, ease: EASE }}
         >
           <p className="text-zinc-400 text-sm">
-            Accepts CSV or XLSX files with columns: Date, Vendor, Category, Amount, Department
+            Accepts any CSV or XLSX file. You&apos;ll map columns in the next step.
           </p>
           <div className="flex items-center justify-center gap-6 text-sm text-zinc-500">
             <div className="flex items-center gap-1.5">

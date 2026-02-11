@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import CORS_ORIGINS
-from app.routers import analyze, upload, vote
+from app.routers import analyze, report, upload, vote
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,11 +33,13 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 app.include_router(upload.router)
 app.include_router(analyze.router)
 app.include_router(vote.router)
+app.include_router(report.router)
 
 
 @app.get("/api/health")

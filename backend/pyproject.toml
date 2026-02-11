@@ -35,5 +35,5 @@ warn_unused_configs = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["langgraph.*", "openai.*", "dotenv.*"]
+module = ["langgraph.*", "openai.*", "dotenv.*", "fpdf.*"]
 ignore_missing_imports = true

@@ -3,6 +3,8 @@
 import logging
 from typing import Any
 
+from app.config import MAX_SESSIONS
+
 logger = logging.getLogger("arena.store")
 
 # session_id -> { "csv_text": str, "summary": DataSummary, "filename": str, "created_at": str }
@@ -18,13 +20,37 @@ _votes: dict[str, dict[str, int]] = {}
 _voted_recommendations: dict[str, list[dict[str, str]]] = {}
 
 
+def _evict_oldest() -> None:
+    """Remove the oldest session when the store exceeds MAX_SESSIONS."""
+    while len(_session_order) > MAX_SESSIONS:
+        old_id = _session_order.pop()
+        _sessions.pop(old_id, None)
+        _votes.pop(old_id, None)
+        _voted_recommendations.pop(old_id, None)
+        logger.info("Evicted old session %s (store capped at %d)", old_id, MAX_SESSIONS)
+
+
 def save_session(session_id: str, data: dict[str, Any]) -> None:
     _sessions[session_id] = data
     _session_order.insert(0, session_id)
+    _evict_oldest()
 
 
 def get_session(session_id: str) -> dict[str, Any] | None:
     return _sessions.get(session_id)
+
+
+def delete_session(session_id: str) -> bool:
+    """Remove a session and all associated data. Returns True if it existed."""
+    if session_id not in _sessions:
+        return False
+    _sessions.pop(session_id, None)
+    _votes.pop(session_id, None)
+    _voted_recommendations.pop(session_id, None)
+    if session_id in _session_order:
+        _session_order.remove(session_id)
+    logger.info("Deleted session %s", session_id)
+    return True
 
 
 def add_vote(

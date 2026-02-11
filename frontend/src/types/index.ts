@@ -22,13 +22,31 @@ export interface AgentState {
   summary: string;
 }
 
+export interface ColumnStats {
+  name: string;
+  dtype: string;
+  total_count: number;
+  missing_count: number;
+  missing_pct: number;
+  unique_count: number;
+  sample_values: string[];
+  min_value: string | null;
+  max_value: string | null;
+}
+
+export interface SuggestedMapping {
+  source_column: string;
+  target_field: string;
+  confidence: number;
+}
+
 export interface UploadResponse {
   session_id: string;
+  filename: string;
   row_count: number;
-  total_spend: number;
-  date_range: string;
-  top_vendors: VendorSummary[];
-  categories: CategorySummary[];
+  columns: string[];
+  suggested_mappings: SuggestedMapping[];
+  column_stats: ColumnStats[];
 }
 
 export interface SSEEvent {
@@ -82,7 +100,10 @@ export interface MonthlyTrend {
 export interface DataSummary {
   total_spend: number;
   row_count: number;
+  unique_vendor_count: number;
   date_range: string;
+  date_min: string | null;
+  date_max: string | null;
   top_vendors: VendorSummary[];
   category_breakdown: CategorySummary[];
   department_breakdown: DepartmentSummary[];

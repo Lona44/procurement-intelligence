@@ -20,6 +20,7 @@ function ArenaContent() {
   const [, setAggressive] = useAtom(agentAtomFamily("aggressive"));
   const [, setBalanced] = useAtom(agentAtomFamily("balanced"));
   const [arenaStarted, setArenaStarted] = useAtom(arenaStartedAtom);
+  const startedRef = useRef(arenaStarted);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   const setters = useMemo<Record<AgentType, typeof setConservative>>(
@@ -72,10 +73,16 @@ function ArenaContent() {
     }
   }, [searchParams, sessionId, setSessionId, router]);
 
+  // Sync atom → ref (so the ref always reflects the latest atom value)
+  useEffect(() => {
+    startedRef.current = arenaStarted;
+  }, [arenaStarted]);
+
   useEffect(() => {
     const sid = sessionId || searchParams.get("session");
-    if (!sid || arenaStarted) return;
+    if (!sid || startedRef.current) return;
 
+    startedRef.current = true;
     setArenaStarted(true);
 
     // Reset agent states
@@ -111,7 +118,8 @@ function ArenaContent() {
     return () => {
       cleanupRef.current?.();
     };
-  }, [sessionId, arenaStarted, setArenaStarted, setters, handleEvent, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, searchParams]);
 
   return (
     <main className="min-h-screen bg-grid p-6 lg:p-8 max-w-[1400px] mx-auto">

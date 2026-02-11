@@ -1,10 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useCallback } from "react";
+import { Suspense, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAtom } from "jotai";
 import { useSearchParams, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { sessionIdAtom, agentAtomFamily, arenaStartedAtom } from "@/store/atoms";
 import { connectSSE } from "@/lib/sse";
+import { EASE, ANIM } from "@/lib/constants";
 import ArenaBoard from "@/components/ArenaBoard";
 import type { AgentType, SSEEvent } from "@/types";
 
@@ -20,11 +22,14 @@ function ArenaContent() {
   const [arenaStarted, setArenaStarted] = useAtom(arenaStartedAtom);
   const cleanupRef = useRef<(() => void) | null>(null);
 
-  const setters: Record<AgentType, typeof setConservative> = {
-    conservative: setConservative,
-    aggressive: setAggressive,
-    balanced: setBalanced,
-  };
+  const setters = useMemo<Record<AgentType, typeof setConservative>>(
+    () => ({
+      conservative: setConservative,
+      aggressive: setAggressive,
+      balanced: setBalanced,
+    }),
+    [setConservative, setAggressive, setBalanced]
+  );
 
   const handleEvent = useCallback(
     (event: SSEEvent) => {
@@ -54,8 +59,7 @@ function ArenaContent() {
         }));
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [setters]
   );
 
   useEffect(() => {
@@ -64,7 +68,7 @@ function ArenaContent() {
       setSessionId(paramSession);
     }
     if (!paramSession && !sessionId) {
-      router.push("/");
+      router.push("/upload");
     }
   }, [searchParams, sessionId, setSessionId, router]);
 
@@ -107,31 +111,35 @@ function ArenaContent() {
     return () => {
       cleanupRef.current?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  }, [sessionId, arenaStarted, setArenaStarted, setters, handleEvent, searchParams]);
 
   return (
-    <main className="min-h-screen p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <main className="min-h-screen bg-grid p-6 lg:p-8 max-w-[1400px] mx-auto">
+      <motion.div
+        className="flex items-center justify-between mb-8"
+        {...ANIM.fadeInUp}
+        transition={{ duration: 0.4, ease: EASE }}
+      >
         <div>
-          <h1 className="text-2xl font-bold">
-            Agent Arena <span className="text-blue-500">Battle</span>
-          </h1>
-          <p className="text-sm text-zinc-500">
-            Watching 3 agents analyze your procurement data...
+          <h1 className="text-xl font-semibold text-zinc-900">Agent Arena</h1>
+          <p className="text-sm text-zinc-500 mt-0.5">
+            Analyzing procurement data across three strategies
           </p>
         </div>
-        <button
+        <motion.button
           onClick={() => {
             setArenaStarted(false);
-            router.push("/");
+            router.push("/upload");
           }}
-          className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700"
+          className="text-sm text-zinc-500 hover:text-zinc-700 transition-all px-4 py-2 rounded-lg border border-zinc-200 hover:border-zinc-300 bg-white shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_4px_0_rgb(0_0_0/0.06)]"
+          {...ANIM.buttonTap}
         >
-          Upload New Data
-        </button>
-      </div>
-      <ArenaBoard />
+          New Analysis
+        </motion.button>
+      </motion.div>
+      <motion.div {...ANIM.fadeInUp} transition={{ duration: 0.5, delay: 0.15, ease: EASE }}>
+        <ArenaBoard />
+      </motion.div>
     </main>
   );
 }

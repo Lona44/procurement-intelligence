@@ -27,8 +27,8 @@ export interface UploadResponse {
   row_count: number;
   total_spend: number;
   date_range: string;
-  top_vendors: Record<string, unknown>[];
-  categories: Record<string, unknown>[];
+  top_vendors: VendorSummary[];
+  categories: CategorySummary[];
 }
 
 export interface SSEEvent {
@@ -54,4 +54,38 @@ export interface Votes {
 export interface VotedRec {
   agentType: AgentType;
   recommendationId: string;
+}
+
+export interface VendorSummary {
+  vendor: string;
+  total_spend: number;
+  transaction_count: number;
+}
+
+export interface CategorySummary {
+  category: string;
+  total_spend: number;
+  transaction_count: number;
+}
+
+export interface DepartmentSummary {
+  department: string;
+  total_spend: number;
+  transaction_count: number;
+}
+
+export interface MonthlyTrend {
+  month: string;
+  total_spend: number;
+}
+
+export interface DataSummary {
+  total_spend: number;
+  row_count: number;
+  date_range: string;
+  top_vendors: VendorSummary[];
+  category_breakdown: CategorySummary[];
+  department_breakdown: DepartmentSummary[];
+  monthly_trends: MonthlyTrend[];
+  duplicate_vendors: string[];
 }

@@ -1,94 +1,99 @@
 "use client";
 
+import { useMemo } from "react";
 import { useAtom } from "jotai";
 import { agentAtomFamily } from "@/store/atoms";
+import { AGENT_CONFIG } from "@/lib/constants";
 import type { AgentType } from "@/types";
 
-const agents: { type: AgentType; label: string; color: string }[] = [
-  { type: "conservative", label: "Conservative", color: "#22c55e" },
-  { type: "aggressive", label: "Aggressive", color: "#ef4444" },
-  { type: "balanced", label: "Balanced", color: "#3b82f6" },
-];
+const agents = (Object.keys(AGENT_CONFIG) as AgentType[]).map((type) => ({
+  type,
+  label: AGENT_CONFIG[type].label,
+  color: AGENT_CONFIG[type].color,
+}));
 
 export default function ComparisonTable() {
   const [conservative] = useAtom(agentAtomFamily("conservative"));
   const [aggressive] = useAtom(agentAtomFamily("aggressive"));
   const [balanced] = useAtom(agentAtomFamily("balanced"));
 
-  const states = { conservative, aggressive, balanced };
+  const states = useMemo(
+    () => ({ conservative, aggressive, balanced }),
+    [conservative, aggressive, balanced]
+  );
+
   const allComplete = Object.values(states).every((s) => s.status === "complete");
+
+  const rows = useMemo(() => {
+    if (!allComplete) return [];
+    return [
+      {
+        label: "Total Savings",
+        values: agents.map((a) => `$${states[a.type].total_savings.toLocaleString()}`),
+        bold: true,
+      },
+      {
+        label: "Recommendations",
+        values: agents.map((a) => String(states[a.type].recommendations.length)),
+      },
+      {
+        label: "Avg Confidence",
+        values: agents.map((a) => {
+          const recs = states[a.type].recommendations;
+          const avg =
+            recs.length > 0 ? recs.reduce((sum, r) => sum + r.confidence, 0) / recs.length : 0;
+          return `${Math.round(avg * 100)}%`;
+        }),
+      },
+      {
+        label: "Top Recommendation",
+        values: agents.map((a) => states[a.type].recommendations[0]?.title || "\u2014"),
+        small: true,
+      },
+    ];
+  }, [states, allComplete]);
 
   if (!allComplete) return null;
 
   return (
-    <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5 mt-6">
-      <h3 className="text-lg font-bold text-zinc-100 mb-4">
-        Side-by-Side Comparison
-      </h3>
+    <div className="card p-5">
+      <h3 className="text-base font-semibold text-zinc-800 mb-4">Comparison</h3>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-800">
-              <th className="text-left text-zinc-500 py-2 pr-4 font-medium">
+            <tr className="border-b border-zinc-200">
+              <th className="text-left text-sm text-zinc-500 font-medium py-2.5 pr-4 uppercase tracking-wider">
                 Metric
               </th>
               {agents.map((a) => (
-                <th
-                  key={a.type}
-                  className="text-center py-2 px-3 font-semibold"
-                  style={{ color: a.color }}
-                >
-                  {a.label}
+                <th key={a.type} className="text-center py-2.5 px-3">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: a.color }}
+                    />
+                    <span className="text-sm font-medium text-zinc-700">{a.label}</span>
+                  </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="text-zinc-300">
-            <tr className="border-b border-zinc-800/50">
-              <td className="py-2 pr-4 text-zinc-500">Total Savings</td>
-              {agents.map((a) => (
-                <td key={a.type} className="text-center py-2 px-3 font-semibold">
-                  ${states[a.type].total_savings.toLocaleString()}
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-zinc-800/50">
-              <td className="py-2 pr-4 text-zinc-500"># Recommendations</td>
-              {agents.map((a) => (
-                <td key={a.type} className="text-center py-2 px-3">
-                  {states[a.type].recommendations.length}
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-zinc-800/50">
-              <td className="py-2 pr-4 text-zinc-500">Avg Confidence</td>
-              {agents.map((a) => {
-                const recs = states[a.type].recommendations;
-                const avg =
-                  recs.length > 0
-                    ? recs.reduce((sum, r) => sum + r.confidence, 0) / recs.length
-                    : 0;
-                return (
-                  <td key={a.type} className="text-center py-2 px-3">
-                    {Math.round(avg * 100)}%
-                  </td>
-                );
-              })}
-            </tr>
-            <tr>
-              <td className="py-2 pr-4 text-zinc-500">Top Recommendation</td>
-              {agents.map((a) => {
-                const top = states[a.type].recommendations[0];
-                return (
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={row.label} className={i < rows.length - 1 ? "border-b border-zinc-100" : ""}>
+                <td className="py-2.5 pr-4 text-sm text-zinc-500">{row.label}</td>
+                {row.values.map((val, j) => (
                   <td
-                    key={a.type}
-                    className="text-center py-2 px-3 text-xs text-zinc-400"
+                    key={j}
+                    className={`text-center py-2.5 px-3 ${
+                      row.bold ? "font-semibold text-zinc-900" : ""
+                    } ${row.small ? "text-sm text-zinc-500" : "text-base text-zinc-700"}`}
                   >
-                    {top?.title || "—"}
+                    {val}
                   </td>
-                );
-              })}
-            </tr>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

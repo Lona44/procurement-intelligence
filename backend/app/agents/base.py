@@ -9,7 +9,10 @@ from langgraph.graph import StateGraph, START, END
 from openai import AsyncOpenAI
 from typing_extensions import TypedDict
 
-from app.config import OPENAI_API_KEY, OPENAI_MODEL, MOCK_AGENTS
+from app.config import (
+    OPENAI_API_KEY, OPENAI_MODEL, OPENAI_TEMPERATURE,
+    MOCK_AGENTS, THINKING_STEP_BASE_DELAY, THINKING_STEP_JITTER,
+)
 from app.agents.prompts import AGENT_PROMPTS
 from app.models.schemas import AgentResult, DataSummary
 
@@ -217,7 +220,7 @@ def _make_step_node(agent_type: str, step_index: int):
 
     async def node(state: ArenaState) -> dict:
         # Simulate thinking time (varies per step to stagger agents)
-        delay = 0.8 + (hash(agent_type + step_text) % 10) / 10
+        delay = THINKING_STEP_BASE_DELAY + (hash(agent_type + step_text) % THINKING_STEP_JITTER) / THINKING_STEP_JITTER
         await asyncio.sleep(delay)
         return {
             "events": [
@@ -314,9 +317,19 @@ def build_arena_graph():
 # OpenAI helper (used when MOCK_AGENTS=false)
 # ---------------------------------------------------------------------------
 
+_openai_client: AsyncOpenAI | None = None
+
+
+def _get_openai_client() -> AsyncOpenAI:
+    global _openai_client
+    if _openai_client is None:
+        _openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+    return _openai_client
+
+
 async def _call_openai(agent_type: str, summary: DataSummary, preferences: str = "") -> AgentResult:
     """Call OpenAI to get agent recommendations."""
-    client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+    client = _get_openai_client()
 
     data_text = f"""Procurement Spend Data Summary:
 - Total Spend: ${summary.total_spend:,.2f}
@@ -349,7 +362,7 @@ Potential Duplicate Vendors Detected:
             {"role": "user", "content": data_text},
         ],
         response_format={"type": "json_object"},
-        temperature=0.7,
+        temperature=OPENAI_TEMPERATURE,
     )
 
     content = response.choices[0].message.content
@@ -376,10 +389,10 @@ Potential Duplicate Vendors Detected:
     )
 
 
-def _format_list(items: list[dict], name_key: str, value_key: str) -> str:
+def _format_list(items: list, name_key: str, value_key: str) -> str:
     lines = []
     for item in items:
-        name = item.get(name_key, "Unknown")
-        value = item.get(value_key, 0)
+        name = getattr(item, name_key, "Unknown")
+        value = getattr(item, value_key, 0)
         lines.append(f"- {name}: ${value:,.2f}")
     return "\n".join(lines)

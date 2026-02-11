@@ -36,21 +36,44 @@ class VoteRequest(BaseModel):
     recommendation_description: str
 
 
+class VendorSummary(BaseModel):
+    vendor: str
+    total_spend: float
+    transaction_count: int
+
+
+class CategorySummary(BaseModel):
+    category: str
+    total_spend: float
+    transaction_count: int
+
+
+class DepartmentSummary(BaseModel):
+    department: str
+    total_spend: float
+    transaction_count: int
+
+
+class MonthlyTrend(BaseModel):
+    month: str
+    total_spend: float
+
+
 class UploadResponse(BaseModel):
     session_id: str
     row_count: int
     total_spend: float
     date_range: str
-    top_vendors: list[dict]
-    categories: list[dict]
+    top_vendors: list[VendorSummary]
+    categories: list[CategorySummary]
 
 
 class DataSummary(BaseModel):
     total_spend: float
     row_count: int
     date_range: str
-    top_vendors: list[dict]
-    category_breakdown: list[dict]
-    department_breakdown: list[dict]
-    monthly_trends: list[dict]
+    top_vendors: list[VendorSummary]
+    category_breakdown: list[CategorySummary]
+    department_breakdown: list[DepartmentSummary]
+    monthly_trends: list[MonthlyTrend]
     duplicate_vendors: list[str]

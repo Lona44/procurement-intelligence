@@ -1,12 +1,13 @@
-"""Process uploaded CSV data with Pandas to produce summaries for agents."""
+"""Process uploaded CSV/XLSX data with Pandas to produce summaries for agents."""
 import pandas as pd
-from io import StringIO
+from io import StringIO, BytesIO
 from difflib import SequenceMatcher
 
+from app.config import DUPLICATE_VENDOR_THRESHOLD, TOP_VENDORS_LIMIT
 from app.models.schemas import DataSummary
 
 
-def find_duplicate_vendors(vendors: list[str], threshold: float = 0.75) -> list[str]:
+def find_duplicate_vendors(vendors: list[str], threshold: float = DUPLICATE_VENDOR_THRESHOLD) -> list[str]:
     """Find vendor names that look like duplicates."""
     duplicates = []
     seen = set()
@@ -22,9 +23,12 @@ def find_duplicate_vendors(vendors: list[str], threshold: float = 0.75) -> list[
     return duplicates
 
 
-def process_csv(csv_content: str) -> tuple[pd.DataFrame, DataSummary]:
-    """Parse CSV and compute summary statistics."""
-    df = pd.read_csv(StringIO(csv_content))
+def process_file(content: bytes, filename: str) -> tuple[pd.DataFrame, DataSummary]:
+    """Parse CSV or XLSX file and compute summary statistics."""
+    if filename.lower().endswith(".xlsx"):
+        df = pd.read_excel(BytesIO(content), engine="openpyxl")
+    else:
+        df = pd.read_csv(StringIO(content.decode("utf-8")))
 
     # Normalize column names
     df.columns = [c.strip().lower() for c in df.columns]
@@ -49,7 +53,7 @@ def process_csv(csv_content: str) -> tuple[pd.DataFrame, DataSummary]:
         df.groupby("vendor")["amount"]
         .agg(["sum", "count"])
         .sort_values("sum", ascending=False)
-        .head(10)
+        .head(TOP_VENDORS_LIMIT)
         .reset_index()
         .rename(columns={"sum": "total_spend", "count": "transaction_count"})
         .to_dict("records")

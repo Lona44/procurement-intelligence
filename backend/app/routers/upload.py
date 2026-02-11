@@ -1,36 +1,40 @@
-"""CSV upload endpoint."""
+"""CSV/XLSX upload endpoint."""
 import uuid
 import logging
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from app.services.data_processor import process_csv
-from app.services.session_store import save_session, list_sessions
-from app.models.schemas import UploadResponse
+from app.services.data_processor import process_file
+from app.services.session_store import save_session, get_session, list_sessions
+from app.models.schemas import UploadResponse, DataSummary
 
 logger = logging.getLogger("arena.upload")
 router = APIRouter()
 
+ALLOWED_EXTENSIONS = (".csv", ".xlsx")
+
 
 @router.post("/api/upload", response_model=UploadResponse)
-async def upload_csv(file: UploadFile = File(...)):
-    if not file.filename or not file.filename.endswith(".csv"):
-        logger.warning("Rejected non-CSV upload: %s", file.filename)
-        raise HTTPException(status_code=400, detail="Please upload a CSV file")
+async def upload_file(file: UploadFile = File(...)):
+    if not file.filename or not file.filename.lower().endswith(ALLOWED_EXTENSIONS):
+        logger.warning("Rejected upload: %s", file.filename)
+        raise HTTPException(status_code=400, detail="Please upload a CSV or XLSX file")
 
     content = await file.read()
-    csv_text = content.decode("utf-8")
 
     try:
-        df, summary = process_csv(csv_text)
+        df, summary = process_file(content, file.filename)
     except ValueError as e:
-        logger.error("CSV validation error: %s", e)
+        logger.error("Validation error: %s", e)
         raise HTTPException(status_code=400, detail=str(e))
     except Exception:
-        logger.error("CSV parse failure for %s", file.filename, exc_info=True)
-        raise HTTPException(status_code=400, detail="Failed to parse CSV file")
+        logger.error("Parse failure for %s", file.filename, exc_info=True)
+        raise HTTPException(status_code=400, detail="Failed to parse file")
 
-    from datetime import datetime, timezone
+    # Store CSV text for agent analysis (convert XLSX to CSV for downstream use)
+    csv_text = df.to_csv(index=False)
+
     session_id = str(uuid.uuid4())
     save_session(session_id, {
         "csv_text": csv_text,
@@ -48,6 +52,17 @@ async def upload_csv(file: UploadFile = File(...)):
         top_vendors=summary.top_vendors[:5],
         categories=summary.category_breakdown,
     )
+
+
+@router.get("/api/summary/{session_id}", response_model=DataSummary)
+async def get_summary(session_id: str):
+    session = get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    summary = session.get("summary")
+    if not summary:
+        raise HTTPException(status_code=404, detail="Summary not available")
+    return summary
 
 
 @router.get("/api/sessions")

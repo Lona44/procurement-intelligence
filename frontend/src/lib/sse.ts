@@ -1,6 +1,5 @@
 import type { SSEEvent } from "@/types";
-
-const API_BASE = "http://localhost:8000";
+import { API_BASE } from "./constants";
 
 export function connectSSE(
   sessionId: string,
@@ -44,8 +43,8 @@ export function connectSSE(
                 return;
               }
               onEvent(event);
-            } catch {
-              // skip malformed JSON
+            } catch (e) {
+              console.warn("[SSE] Malformed JSON:", jsonStr, e);
             }
           }
         }

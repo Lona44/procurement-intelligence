@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { atomFamily } from "jotai/utils";
-import type { AgentState, AgentType, Votes, VotedRec } from "@/types";
+import type { AgentState, AgentType, Votes, VotedRec, DataSummary } from "@/types";
 
 export const sessionIdAtom = atom<string | null>(null);
 
@@ -27,3 +27,5 @@ export const votesAtom = atom<Votes>({
 export const arenaStartedAtom = atom<boolean>(false);
 
 export const votedRecsAtom = atom<VotedRec[]>([]);
+
+export const dataSummaryAtom = atom<DataSummary | null>(null);

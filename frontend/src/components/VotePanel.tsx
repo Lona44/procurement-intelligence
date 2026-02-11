@@ -7,15 +7,10 @@ import type { AgentType, Recommendation, Votes } from "@/types";
 
 interface VotePanelProps {
   agentType: AgentType;
-  accentColor: string;
   recommendation: Recommendation;
 }
 
-export default function VotePanel({
-  agentType,
-  accentColor,
-  recommendation,
-}: VotePanelProps) {
+export default function VotePanel({ agentType, recommendation }: VotePanelProps) {
   const [sessionId] = useAtom(sessionIdAtom);
   const [, setVotes] = useAtom(votesAtom);
   const [votedRecs, setVotedRecs] = useAtom(votedRecsAtom);
@@ -35,12 +30,9 @@ export default function VotePanel({
         recommendation.description
       );
       setVotes(res.votes as Votes);
-      setVotedRecs((prev) => [
-        ...prev,
-        { agentType, recommendationId: recommendation.id },
-      ]);
-    } catch {
-      // ignore
+      setVotedRecs((prev) => [...prev, { agentType, recommendationId: recommendation.id }]);
+    } catch (err) {
+      console.warn("[VotePanel] Vote failed:", err);
     }
   };
 
@@ -48,14 +40,16 @@ export default function VotePanel({
     <button
       onClick={handleVote}
       disabled={alreadyVoted}
-      title={alreadyVoted ? "Already voted" : "Vote for this recommendation"}
-      className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all disabled:opacity-50 disabled:cursor-default hover:scale-105 active:scale-95 shrink-0"
-      style={{
-        backgroundColor: alreadyVoted ? `${accentColor}30` : `${accentColor}15`,
-        color: accentColor,
-        borderWidth: 1,
-        borderColor: alreadyVoted ? accentColor : `${accentColor}30`,
-      }}
+      title={alreadyVoted ? "Already voted" : "Upvote this recommendation"}
+      className={`
+        flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-medium transition-all
+        disabled:cursor-default
+        ${
+          alreadyVoted
+            ? "bg-zinc-100 text-zinc-400 border border-zinc-200"
+            : "bg-white hover:bg-zinc-50 text-zinc-700 hover:text-zinc-900 border border-zinc-200 hover:border-zinc-300 shadow-[0_1px_2px_0_rgb(0_0_0/0.04)] hover:shadow-[0_1px_3px_0_rgb(0_0_0/0.06)]"
+        }
+      `}
     >
       <svg
         width="12"
@@ -67,10 +61,9 @@ export default function VotePanel({
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d="M7 10v12" />
-        <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
+        <path d="m18 15-6-6-6 6" />
       </svg>
-      {alreadyVoted ? "Voted" : "Vote"}
+      {alreadyVoted ? "Voted" : "Upvote"}
     </button>
   );
 }

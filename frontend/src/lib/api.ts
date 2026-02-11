@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000";
+import { API_BASE } from "./constants";
 
 export async function uploadCSV(file: File) {
   const formData = new FormData();
@@ -49,5 +49,11 @@ export async function getVotes(sessionId: string) {
 export async function getSessions() {
   const res = await fetch(`${API_BASE}/api/sessions`);
   if (!res.ok) throw new Error("Failed to get sessions");
+  return res.json();
+}
+
+export async function getDataSummary(sessionId: string) {
+  const res = await fetch(`${API_BASE}/api/summary/${sessionId}`);
+  if (!res.ok) throw new Error("Failed to get data summary");
   return res.json();
 }

@@ -72,8 +72,12 @@ body {
 
 /* Delayed fade-in — used to hide white-bg flash before mix-blend-multiply composites */
 @keyframes fade-in {
-  0% { opacity: 0; }
-  100% { opacity: 0.7; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.7;
+  }
 }
 
 /* Clean shimmer for loading states */

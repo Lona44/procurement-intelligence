@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+
+echo "Running pre-commit checks..."
+
+# Backend: Ruff lint + format
+if command -v ruff &>/dev/null; then
+  echo "  Backend: ruff check"
+  ruff check backend/app/
+  echo "  Backend: ruff format"
+  ruff format --check backend/app/
+else
+  echo "  Backend: ruff not found, skipping (pip install ruff)"
+fi
+
+# Frontend: lint + typecheck + format
+if [ -d "frontend/node_modules" ]; then
+  echo "  Frontend: eslint"
+  npm --prefix frontend run lint --silent
+  echo "  Frontend: typecheck"
+  npm --prefix frontend run typecheck --silent
+  echo "  Frontend: prettier"
+  npm --prefix frontend run format:check --silent
+else
+  echo "  Frontend: node_modules not found, skipping (cd frontend && npm install)"
+fi
+
+echo "All checks passed!"

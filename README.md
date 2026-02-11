@@ -177,6 +177,16 @@ agent-arena-battle/
 | `ruff format .` | Format Python code |
 | `mypy app/ --ignore-missing-imports` | Type check Python code |
 
+### Pre-commit Hooks
+
+Enable local lint checks that run automatically before each commit:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This runs Ruff (backend) and ESLint + Prettier + TypeScript (frontend) checks before every commit, preventing lint errors from reaching the repo.
+
 ### CI Pipeline
 
 Every push and PR to `main` runs:

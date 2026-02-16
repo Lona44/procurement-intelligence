@@ -10,7 +10,7 @@ export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "Features", href: "/#features" },
   { label: "About", href: "/#about" },
-  { label: "GitHub", href: "https://github.com", external: true },
+  { label: "GitHub", href: "https://github.com/Lona44/procurement-intelligence", external: true },
   { label: "Contact", href: "/#contact" },
 ];
 

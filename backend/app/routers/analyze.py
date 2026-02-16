@@ -20,11 +20,15 @@ async def analyze(session_id: str):
         logger.warning("Analyze request for unknown session: %s", session_id)
         raise HTTPException(status_code=404, detail="Session not found")
 
-    summary = session["summary"]
+    summary = session.get("active_summary") or session["summary"]
     preferences = build_preference_context(session_id)
     if preferences:
         logger.info("Session %s has preference context (%d chars)", session_id, len(preferences))
     logger.info("Starting arena analysis for session %s", session_id)
+
+    # Ensure agent_results dict exists (preserve previous results during re-runs)
+    if "agent_results" not in session:
+        session["agent_results"] = {}
 
     async def event_stream():
         graph = build_arena_graph()
@@ -41,8 +45,10 @@ async def analyze(session_id: str):
                     for event in node_output.get("events", []):
                         if event.get("status") == "complete":
                             agent = event.get("agent", "?")
-                            savings = event.get("result", {}).get("total_savings", 0)
+                            result = event.get("result", {})
+                            savings = result.get("total_savings", 0)
                             logger.info("Agent '%s' complete — $%.2f total savings", agent, savings)
+                            session["agent_results"][agent] = result
                         yield f"data: {json.dumps(event)}\n\n"
         except Exception as e:
             logger.error("Graph execution error for session %s: %s", session_id, e, exc_info=True)

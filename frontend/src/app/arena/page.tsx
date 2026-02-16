@@ -8,6 +8,7 @@ import { sessionIdAtom, agentAtomFamily, arenaStartedAtom } from "@/store/atoms"
 import { connectSSE } from "@/lib/sse";
 import { EASE, ANIM } from "@/lib/constants";
 import ArenaBoard from "@/components/ArenaBoard";
+import ExportReportButton from "@/components/ExportReportButton";
 import type { AgentType, SSEEvent } from "@/types";
 
 const AGENT_TYPES: AgentType[] = ["conservative", "aggressive", "balanced"];
@@ -20,6 +21,7 @@ function ArenaContent() {
   const [, setAggressive] = useAtom(agentAtomFamily("aggressive"));
   const [, setBalanced] = useAtom(agentAtomFamily("balanced"));
   const [arenaStarted, setArenaStarted] = useAtom(arenaStartedAtom);
+  const startedRef = useRef(arenaStarted);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   const setters = useMemo<Record<AgentType, typeof setConservative>>(
@@ -72,10 +74,16 @@ function ArenaContent() {
     }
   }, [searchParams, sessionId, setSessionId, router]);
 
+  // Sync atom → ref (so the ref always reflects the latest atom value)
+  useEffect(() => {
+    startedRef.current = arenaStarted;
+  }, [arenaStarted]);
+
   useEffect(() => {
     const sid = sessionId || searchParams.get("session");
-    if (!sid || arenaStarted) return;
+    if (!sid || startedRef.current) return;
 
+    startedRef.current = true;
     setArenaStarted(true);
 
     // Reset agent states
@@ -111,7 +119,8 @@ function ArenaContent() {
     return () => {
       cleanupRef.current?.();
     };
-  }, [sessionId, arenaStarted, setArenaStarted, setters, handleEvent, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, searchParams]);
 
   return (
     <main className="min-h-screen bg-grid p-6 lg:p-8 max-w-[1400px] mx-auto">
@@ -126,16 +135,19 @@ function ArenaContent() {
             Analyzing procurement data across three strategies
           </p>
         </div>
-        <motion.button
-          onClick={() => {
-            setArenaStarted(false);
-            router.push("/upload");
-          }}
-          className="text-sm text-zinc-500 hover:text-zinc-700 transition-all px-4 py-2 rounded-lg border border-zinc-200 hover:border-zinc-300 bg-white shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_4px_0_rgb(0_0_0/0.06)]"
-          {...ANIM.buttonTap}
-        >
-          New Analysis
-        </motion.button>
+        <div className="flex items-center gap-3">
+          <ExportReportButton />
+          <motion.button
+            onClick={() => {
+              setArenaStarted(false);
+              router.push("/upload");
+            }}
+            className="text-sm text-zinc-500 hover:text-zinc-700 transition-all px-4 py-2 rounded-lg border border-zinc-200 hover:border-zinc-300 bg-white shadow-[0_1px_2px_0_rgb(0_0_0/0.03)] hover:shadow-[0_2px_4px_0_rgb(0_0_0/0.06)]"
+            {...ANIM.buttonTap}
+          >
+            New Analysis
+          </motion.button>
+        </div>
       </motion.div>
       <motion.div {...ANIM.fadeInUp} transition={{ duration: 0.5, delay: 0.15, ease: EASE }}>
         <ArenaBoard />

@@ -3,6 +3,8 @@
 import logging
 from typing import Any
 
+from app.config import MAX_SESSIONS
+
 logger = logging.getLogger("arena.store")
 
 # session_id -> { "csv_text": str, "summary": DataSummary, "filename": str, "created_at": str }
@@ -18,13 +20,37 @@ _votes: dict[str, dict[str, int]] = {}
 _voted_recommendations: dict[str, list[dict[str, str]]] = {}
 
 
+def _evict_oldest() -> None:
+    """Remove the oldest session when the store exceeds MAX_SESSIONS."""
+    while len(_session_order) > MAX_SESSIONS:
+        old_id = _session_order.pop()
+        _sessions.pop(old_id, None)
+        _votes.pop(old_id, None)
+        _voted_recommendations.pop(old_id, None)
+        logger.info("Evicted old session %s (store capped at %d)", old_id, MAX_SESSIONS)
+
+
 def save_session(session_id: str, data: dict[str, Any]) -> None:
     _sessions[session_id] = data
     _session_order.insert(0, session_id)
+    _evict_oldest()
 
 
 def get_session(session_id: str) -> dict[str, Any] | None:
     return _sessions.get(session_id)
+
+
+def delete_session(session_id: str) -> bool:
+    """Remove a session and all associated data. Returns True if it existed."""
+    if session_id not in _sessions:
+        return False
+    _sessions.pop(session_id, None)
+    _votes.pop(session_id, None)
+    _voted_recommendations.pop(session_id, None)
+    if session_id in _session_order:
+        _session_order.remove(session_id)
+    logger.info("Deleted session %s", session_id)
+    return True
 
 
 def add_vote(
@@ -81,6 +107,7 @@ def list_sessions() -> list[dict[str, Any]]:
                 "row_count": summary.row_count if summary else 0,
                 "total_spend": summary.total_spend if summary else 0,
                 "vote_count": vote_count,
+                "has_report": bool(session.get("agent_results")),
             }
         )
     return results
@@ -88,6 +115,12 @@ def list_sessions() -> list[dict[str, Any]]:
 
 def get_votes(session_id: str) -> dict[str, int]:
     return _votes.get(session_id, {"conservative": 0, "aggressive": 0, "balanced": 0})
+
+
+def get_voted_recommendation_ids(session_id: str) -> list[str]:
+    """Return just the recommendation IDs that have been voted on."""
+    voted = _voted_recommendations.get(session_id, [])
+    return [v["recommendation_id"] for v in voted]
 
 
 def build_preference_context(session_id: str) -> str:

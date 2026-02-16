@@ -1,20 +1,39 @@
 import { API_BASE } from "./constants";
 
-export async function uploadCSV(file: File) {
+export async function uploadCSV(
+  file: File,
+  onProgress?: (pct: number) => void
+): Promise<Record<string, unknown>> {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(`${API_BASE}/api/upload`, {
-    method: "POST",
-    body: formData,
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener("progress", (e) => {
+      if (e.lengthComputable && onProgress) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+
+    xhr.addEventListener("load", () => {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(data);
+        } else {
+          reject(new Error(data.detail || "Upload failed"));
+        }
+      } catch {
+        reject(new Error("Upload failed"));
+      }
+    });
+
+    xhr.addEventListener("error", () => reject(new Error("Upload failed")));
+
+    xhr.open("POST", `${API_BASE}/api/upload`);
+    xhr.send(formData);
   });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: "Upload failed" }));
-    throw new Error(err.detail || "Upload failed");
-  }
-
-  return res.json();
 }
 
 export async function castVote(
@@ -52,8 +71,51 @@ export async function getSessions() {
   return res.json();
 }
 
-export async function getDataSummary(sessionId: string) {
-  const res = await fetch(`${API_BASE}/api/summary/${sessionId}`);
+export async function deleteSession(sessionId: string) {
+  const res = await fetch(`${API_BASE}/api/sessions/${sessionId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete session");
+  return res.json();
+}
+
+export async function getDataSummary(sessionId: string, startDate?: string, endDate?: string) {
+  const params = new URLSearchParams();
+  if (startDate) params.set("start_date", startDate);
+  if (endDate) params.set("end_date", endDate);
+  const qs = params.toString();
+  const res = await fetch(`${API_BASE}/api/summary/${sessionId}${qs ? `?${qs}` : ""}`);
   if (!res.ok) throw new Error("Failed to get data summary");
   return res.json();
+}
+
+export async function confirmMappings(sessionId: string, mappings: Record<string, string>) {
+  const res = await fetch(`${API_BASE}/api/confirm-mappings`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_id: sessionId, mappings }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Mapping failed" }));
+    throw new Error(err.detail || "Failed to confirm mappings");
+  }
+
+  return res.json();
+}
+
+export async function exportReport(sessionId: string): Promise<{ blob: Blob; filename: string }> {
+  const res = await fetch(`${API_BASE}/api/report/${sessionId}`);
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Report generation failed" }));
+    throw new Error(err.detail || "Failed to generate report");
+  }
+
+  const blob = await res.blob();
+  const disposition = res.headers.get("Content-Disposition") || "";
+  const match = disposition.match(/filename="(.+?)"/);
+  const filename = match ? match[1] : "procurement_report.pdf";
+
+  return { blob, filename };
 }

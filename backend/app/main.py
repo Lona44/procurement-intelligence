@@ -6,8 +6,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.config import CORS_ORIGINS
-from app.routers import analyze, upload, vote
+from app.config import CORS_ORIGIN_REGEX, CORS_ORIGINS
+from app.routers import analyze, report, upload, vote
 
 logging.basicConfig(
     level=logging.INFO,
@@ -30,14 +30,17 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
 )
 
 app.include_router(upload.router)
 app.include_router(analyze.router)
 app.include_router(vote.router)
+app.include_router(report.router)
 
 
 @app.get("/api/health")

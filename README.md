@@ -12,16 +12,16 @@
 
 **AI-powered procurement spend analysis.** Three autonomous agents compete to find savings in your data — each with a different strategy, each fighting to deliver the best recommendations.
 
-Upload a CSV or XLSX file, preview your data, then watch three AI agents analyze it in real time via server-sent events. Compare their results side-by-side and vote on the recommendations you trust most.
+Upload a CSV or XLSX file, map columns to standard fields, preview data quality and summary stats with adjustable date filters, then watch three AI agents analyze it in real time via server-sent events. Compare their results side-by-side, vote on the recommendations you trust most, and export a PDF report.
 
 ---
 
 ## How It Works
 
 ```
-Upload  ──>  Preview  ──>  Analyze  ──>  Vote
- .csv/.xlsx    charts &     3 agents      pick the best
-               summary      stream SSE    recommendations
+Upload  ──>  Map Columns  ──>  Preview  ──>  Analyze  ──>  Vote  ──>  Export
+ .csv/.xlsx    confirm fields    charts &     3 agents      pick the     PDF
+               + data quality    date filter  stream SSE    best recs    report
 ```
 
 | Agent | Strategy | Approach |
@@ -32,29 +32,34 @@ Upload  ──>  Preview  ──>  Analyze  ──>  Vote
 
 Each agent independently analyzes your spend data using LangGraph-orchestrated workflows backed by OpenAI, then presents ranked recommendations with estimated savings, confidence scores, and pros/cons.
 
+When you vote on recommendations and re-run the analysis, agents shift their focus toward topics you cared about — without losing their distinct risk personalities.
+
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────┐
-│  Frontend (Next.js 14 / App Router)         │
-│  ├── /upload      File upload + validation  │
-│  ├── /preview     Data overview + confirm   │
-│  └── /arena       SSE stream + agent cards  │
-│                                             │
-│  Jotai atoms ─ Framer Motion ─ Tremor charts│
-└──────────────────┬──────────────────────────┘
-                   │ REST + SSE
-┌──────────────────┴──────────────────────────┐
-│  Backend (FastAPI)                           │
-│  ├── /api/upload       Parse & summarize    │
-│  ├── /api/analyze      SSE agent stream     │
-│  ├── /api/sessions     Session history      │
-│  └── /api/vote         Recommendation votes │
-│                                             │
-│  LangGraph agents ─ OpenAI ─ Pandas         │
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│  Frontend (Next.js 14 / App Router)                  │
+│  ├── /upload      File upload + session history      │
+│  ├── /preview     Column mapping + data overview     │
+│  └── /arena       SSE stream + agent cards + export  │
+│                                                      │
+│  Jotai atoms ─ Framer Motion ─ Recharts              │
+└───────────────────┬──────────────────────────────────┘
+                    │ REST + SSE
+┌───────────────────┴──────────────────────────────────┐
+│  Backend (FastAPI)                                    │
+│  ├── /api/upload           Parse & suggest mappings  │
+│  ├── /api/confirm-mappings Apply mappings & summarize│
+│  ├── /api/summary          Date-filtered stats       │
+│  ├── /api/analyze          SSE agent stream          │
+│  ├── /api/vote             Recommendation votes      │
+│  ├── /api/report           PDF export (GET)          │
+│  └── /api/sessions         Session history + delete  │
+│                                                      │
+│  LangGraph agents ─ OpenAI ─ Pandas ─ fpdf2          │
+└──────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -98,8 +103,9 @@ Create `backend/.env`:
 OPENAI_API_KEY=sk-...          # Optional if using mock mode
 MOCK_AGENTS=true               # Set to false to use real OpenAI calls
 OPENAI_MODEL=gpt-4o-mini       # Model for agent analysis
-CORS_ORIGINS=http://localhost:3000
 ```
+
+> CORS is automatically configured to allow any `localhost` port during development. Set `CORS_ORIGINS` explicitly for production deployments.
 
 ### 3. Run
 
@@ -125,29 +131,41 @@ Open [http://localhost:3000](http://localhost:3000) and upload a spend file to g
 agent-arena-battle/
 ├── backend/
 │   ├── app/
-│   │   ├── agents/          # LangGraph agent definitions & prompts
-│   │   ├── models/          # Pydantic schemas
-│   │   ├── routers/         # FastAPI route handlers
-│   │   ├── services/        # Data processing & analysis
-│   │   ├── config.py        # Environment & app constants
-│   │   └── main.py          # FastAPI app entrypoint
+│   │   ├── agents/            # LangGraph agent definitions & prompts
+│   │   ├── models/            # Pydantic schemas
+│   │   ├── routers/
+│   │   │   ├── upload.py      # CSV upload, column mapping, date filter, sessions
+│   │   │   ├── analyze.py     # SSE streaming endpoint
+│   │   │   ├── report.py      # PDF report export
+│   │   │   └── vote.py        # Voting endpoint
+│   │   ├── services/
+│   │   │   ├── data_processor.py    # Pandas CSV analysis + column mapping
+│   │   │   ├── session_store.py     # In-memory state + preference builder
+│   │   │   └── report_generator.py  # PDF generation with fpdf2
+│   │   ├── config.py          # Environment & app constants
+│   │   └── main.py            # FastAPI app entrypoint
 │   ├── requirements.txt
-│   └── pyproject.toml       # Ruff & mypy configuration
+│   └── pyproject.toml         # Ruff & mypy configuration
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── app/             # Next.js App Router pages
-│   │   ├── components/      # React components
-│   │   ├── lib/             # Utilities, constants, API client, SSE
-│   │   ├── store/           # Jotai state atoms
-│   │   └── types/           # TypeScript interfaces
+│   │   ├── app/               # Next.js App Router pages
+│   │   │   ├── page.tsx       # Landing page
+│   │   │   ├── upload/        # File upload + session history
+│   │   │   ├── preview/       # Column mapping + data overview
+│   │   │   └── arena/         # Agent arena + export
+│   │   ├── components/        # React components
+│   │   ├── lib/               # API client, SSE client, constants
+│   │   ├── store/             # Jotai state atoms
+│   │   └── types/             # TypeScript interfaces
 │   ├── tailwind.config.ts
 │   └── package.json
 │
 ├── .github/
-│   ├── workflows/ci.yml     # Lint, typecheck, build, security audit
-│   └── dependabot.yml       # Automated dependency updates
+│   ├── workflows/ci.yml       # Lint, typecheck, build, security audit
+│   └── dependabot.yml         # Automated dependency updates
 │
+├── TECHNICAL_WALKTHROUGH.md   # Detailed tech stack walkthrough
 └── README.md
 ```
 
@@ -204,11 +222,13 @@ All GitHub Actions are pinned to full SHA hashes for supply-chain security.
 | Layer | Technology |
 |-------|-----------|
 | **Frontend** | Next.js 14, React 18, TypeScript |
-| **Styling** | Tailwind CSS, Tremor (charts), Framer Motion |
+| **Styling** | Tailwind CSS, Framer Motion |
+| **Charts** | Recharts |
 | **State** | Jotai (atomic state management) |
 | **Backend** | FastAPI, Pydantic v2 |
 | **AI Orchestration** | LangGraph, OpenAI API |
 | **Data Processing** | Pandas, openpyxl |
+| **PDF Reports** | fpdf2 |
 | **CI/CD** | GitHub Actions, Dependabot |
 | **Linting** | ESLint + Prettier (frontend), Ruff + mypy (backend) |
 
@@ -222,7 +242,8 @@ All GitHub Actions are pinned to full SHA hashes for supply-chain security.
 | `MOCK_AGENTS` | `true` | Use synthetic agent responses (no API calls) |
 | `OPENAI_MODEL` | `gpt-4o-mini` | OpenAI model to use |
 | `OPENAI_TEMPERATURE` | `0.7` | Model temperature for generation |
-| `CORS_ORIGINS` | `http://localhost:3000` | Comma-separated allowed origins |
+| `CORS_ORIGINS` | — | Comma-separated allowed origins (for production) |
+| `CORS_ORIGIN_REGEX` | `^http://localhost:\d+$` | Regex for allowed origins (any localhost port by default) |
 
 ---
 

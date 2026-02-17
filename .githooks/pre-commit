@@ -13,9 +13,10 @@ else
   echo "  Backend: ruff not found, skipping (pip install ruff)"
 fi
 
-if command -v mypy &>/dev/null; then
+MYPY_BIN="backend/venv/bin/mypy"
+if [ -x "$MYPY_BIN" ]; then
   echo "  Backend: mypy"
-  mypy backend/app/ --ignore-missing-imports
+  "$MYPY_BIN" backend/app/ --ignore-missing-imports
 else
   echo "  Backend: mypy not found, skipping (pip install mypy pydantic[mypy])"
 fi

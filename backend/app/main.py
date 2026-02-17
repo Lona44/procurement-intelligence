@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import CORS_ORIGIN_REGEX, CORS_ORIGINS
-from app.routers import analyze, report, upload, vote
+from app.routers import analyze, demo, report, upload, vote
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,6 +41,7 @@ app.include_router(upload.router)
 app.include_router(analyze.router)
 app.include_router(vote.router)
 app.include_router(report.router)
+app.include_router(demo.router)
 
 
 @app.get("/api/health")

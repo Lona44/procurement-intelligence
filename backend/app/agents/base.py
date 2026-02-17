@@ -7,11 +7,15 @@ import operator
 from typing import Annotated
 
 from langgraph.graph import END, START, StateGraph
-from openai import AsyncOpenAI
+from openai import AsyncAzureOpenAI, AsyncOpenAI
 from typing_extensions import TypedDict
 
 from app.agents.prompts import AGENT_PROMPTS
 from app.config import (
+    AZURE_OPENAI_API_KEY,
+    AZURE_OPENAI_API_VERSION,
+    AZURE_OPENAI_DEPLOYMENT,
+    AZURE_OPENAI_ENDPOINT,
     MOCK_AGENTS,
     OPENAI_API_KEY,
     OPENAI_MODEL,
@@ -352,10 +356,22 @@ def build_arena_graph():
 _openai_client: AsyncOpenAI | None = None
 
 
+def _is_azure() -> bool:
+    """Return True when Azure OpenAI is configured."""
+    return bool(AZURE_OPENAI_ENDPOINT)
+
+
 def _get_openai_client() -> AsyncOpenAI:
     global _openai_client
     if _openai_client is None:
-        _openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+        if _is_azure():
+            _openai_client = AsyncAzureOpenAI(
+                azure_endpoint=AZURE_OPENAI_ENDPOINT,
+                api_key=AZURE_OPENAI_API_KEY,
+                api_version=AZURE_OPENAI_API_VERSION,
+            )
+        else:
+            _openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
     return _openai_client
 
 
@@ -387,8 +403,9 @@ Potential Duplicate Vendors Detected:
     if preferences:
         data_text += f"\n\n--- USER PREFERENCES ---\n{preferences}\n"
 
+    model = AZURE_OPENAI_DEPLOYMENT if _is_azure() else OPENAI_MODEL
     response = await client.chat.completions.create(
-        model=OPENAI_MODEL,
+        model=model,
         messages=[
             {"role": "system", "content": AGENT_PROMPTS[agent_type]},
             {"role": "user", "content": data_text},

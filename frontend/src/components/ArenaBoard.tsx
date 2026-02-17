@@ -2,6 +2,7 @@
 
 import AgentCard from "./AgentCard";
 import ComparisonTable from "./ComparisonTable";
+import BehaviouralInsight from "./BehaviouralInsight";
 import type { AgentType } from "@/types";
 
 const AGENTS: AgentType[] = ["conservative", "aggressive", "balanced"];
@@ -15,6 +16,7 @@ export default function ArenaBoard() {
         ))}
       </div>
       <ComparisonTable />
+      <BehaviouralInsight />
     </div>
   );
 }

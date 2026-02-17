@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { EASE, ANIM } from "@/lib/constants";
+import { startDemo } from "@/lib/api";
 import NavLinks from "@/components/NavLinks";
 
 const AGENTS = [
@@ -84,6 +87,19 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  async function handleTryDemo() {
+    setDemoLoading(true);
+    try {
+      const { session_id } = await startDemo();
+      router.push(`/arena?session=${session_id}`);
+    } catch {
+      setDemoLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-grid">
       {/* ── Hero ── */}
@@ -172,6 +188,15 @@ export default function LandingPage() {
               >
                 Get Started
               </Link>
+            </motion.div>
+            <motion.div {...ANIM.buttonTap}>
+              <button
+                onClick={handleTryDemo}
+                disabled={demoLoading}
+                className="inline-flex h-10 items-center rounded-lg border border-indigo-200 bg-indigo-50 px-6 text-sm font-medium text-indigo-600 shadow-[0_1px_2px_0_rgb(0_0_0/0.04)] transition-all hover:bg-indigo-100 hover:shadow-[0_2px_4px_0_rgb(0_0_0/0.06)] disabled:opacity-50"
+              >
+                {demoLoading ? "Loading..." : "Try Demo"}
+              </button>
             </motion.div>
             <motion.div {...ANIM.buttonTap}>
               <a

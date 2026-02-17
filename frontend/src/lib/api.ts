@@ -36,6 +36,12 @@ export async function uploadCSV(
   });
 }
 
+export async function startDemo(): Promise<{ session_id: string }> {
+  const res = await fetch(`${API_BASE}/api/demo/start`, { method: "POST" });
+  if (!res.ok) throw new Error("Demo start failed");
+  return res.json();
+}
+
 export async function castVote(
   sessionId: string,
   agentType: string,

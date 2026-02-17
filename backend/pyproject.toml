@@ -22,6 +22,9 @@ select = [
 ]
 ignore = ["E501"]  # line length handled by formatter
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]  # assert is fine in tests
+
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 
@@ -35,5 +38,10 @@ warn_unused_configs = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["langgraph.*", "openai.*", "dotenv.*", "fpdf.*"]
+module = ["langgraph.*", "openai.*", "dotenv.*", "fpdf.*", "pandas.*"]
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]

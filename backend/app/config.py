@@ -8,6 +8,12 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 MOCK_AGENTS = os.getenv("MOCK_AGENTS", "true").lower() == "true"
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_TEMPERATURE = float(os.getenv("OPENAI_TEMPERATURE", "0.7"))
+
+# Azure OpenAI (optional — takes priority over standard OpenAI when set)
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "")
+AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY", "")
+AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-10-21")
+AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "")
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else []
 CORS_ORIGIN_REGEX = os.getenv("CORS_ORIGIN_REGEX", r"^http://localhost:\d+$")
 

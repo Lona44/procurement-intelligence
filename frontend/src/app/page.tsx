@@ -94,7 +94,7 @@ export default function LandingPage() {
     setDemoLoading(true);
     try {
       const { session_id } = await startDemo();
-      router.push(`/arena?session=${session_id}`);
+      router.push(`/preview?session=${session_id}`);
     } catch {
       setDemoLoading(false);
     }

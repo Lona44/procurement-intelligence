@@ -254,7 +254,7 @@ export default function DataOverview() {
         <div className="card p-5">
           <h3 className="text-base font-medium text-zinc-600 mb-4">Spend by Department</h3>
           <BarChart
-            className="h-56"
+            className="h-64"
             data={deptChartData}
             index="name"
             categories={["Spend"]}
@@ -263,6 +263,8 @@ export default function DataOverview() {
             showAnimation={true}
             showLegend={false}
             showGridLines={false}
+            tickGap={2}
+            yAxisWidth={65}
           />
         </div>
       )}

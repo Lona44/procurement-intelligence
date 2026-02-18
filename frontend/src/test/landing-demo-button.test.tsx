@@ -46,7 +46,7 @@ describe("Landing page demo button", () => {
     expect(screen.getByRole("button", { name: /try demo/i })).toBeInTheDocument();
   });
 
-  it("calls startDemo and navigates to arena on click", async () => {
+  it("calls startDemo and navigates to preview on click", async () => {
     const user = userEvent.setup();
     vi.mocked(startDemo).mockResolvedValueOnce({ session_id: "demo-abc" });
 
@@ -55,7 +55,7 @@ describe("Landing page demo button", () => {
     await user.click(btn);
 
     expect(startDemo).toHaveBeenCalledOnce();
-    expect(mockPush).toHaveBeenCalledWith("/arena?session=demo-abc");
+    expect(mockPush).toHaveBeenCalledWith("/preview?session=demo-abc");
   });
 
   it("disables the button while loading", async () => {

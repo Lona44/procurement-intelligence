@@ -80,16 +80,16 @@ export default function FileUpload() {
   );
 
   return (
-    <motion.div
+    <motion.label
+      htmlFor={uploading ? undefined : "file-upload-input"}
       onDragOver={(e) => {
         e.preventDefault();
         setDragOver(true);
       }}
       onDragLeave={() => setDragOver(false)}
       onDrop={onDrop}
-      onClick={() => !uploading && inputRef.current?.click()}
       className={`
-        relative rounded-xl border p-10 text-center transition-all duration-200
+        block relative rounded-xl border p-10 text-center transition-all duration-200
         ${uploading ? "" : "cursor-pointer"}
         ${
           dragOver
@@ -103,6 +103,7 @@ export default function FileUpload() {
     >
       <input
         ref={inputRef}
+        id="file-upload-input"
         type="file"
         accept=".csv,.xlsx"
         onChange={onFileSelect}
@@ -173,6 +174,6 @@ export default function FileUpload() {
           {error}
         </motion.p>
       )}
-    </motion.div>
+    </motion.label>
   );
 }

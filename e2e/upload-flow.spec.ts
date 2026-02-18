@@ -14,10 +14,10 @@ test.describe("Upload flow", () => {
     // Wait for navigation to preview page
     await page.waitForURL(/\/preview/, { timeout: 15_000 });
 
-    // Should show column mapping UI
-    await expect(page.getByText(/date/i)).toBeVisible({ timeout: 5_000 });
-    await expect(page.getByText(/vendor/i)).toBeVisible();
-    await expect(page.getByText(/amount/i)).toBeVisible();
+    // Should show column mapping UI with required field labels
+    await expect(page.getByText("Date", { exact: true })).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText("Vendor", { exact: true })).toBeVisible();
+    await expect(page.getByText("Amount", { exact: true })).toBeVisible();
   });
 
   test("full upload → confirm mappings → arena → agents complete", async ({ page }) => {

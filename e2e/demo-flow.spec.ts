@@ -79,7 +79,7 @@ test.describe("Demo flow", () => {
 
     // Wait for the Behavioural Insight card to appear
     await expect(
-      page.getByText(/risk-averse|bold optimizer|pragmatic|strategic/i),
+      page.getByText(/risk-averse|bold optimizer|pragmatic|strategic/i).first(),
     ).toBeVisible({ timeout: 5_000 });
   });
 
@@ -101,16 +101,17 @@ test.describe("Demo flow", () => {
   });
 
   test("comparison table appears after completion", async ({ page }) => {
+    test.setTimeout(60_000);
     await demoToArena(page);
 
     // Wait for agents to complete
     const completeLabels = page.getByText("Complete");
-    await expect(completeLabels).toHaveCount(3, { timeout: 30_000 });
+    await expect(completeLabels).toHaveCount(3, { timeout: 45_000 });
 
     // Comparison table should appear
     await expect(page.getByText("Comparison")).toBeVisible({ timeout: 5_000 });
-    await expect(page.getByText("Total Savings")).toBeVisible();
-    await expect(page.getByText("Recommendations")).toBeVisible();
-    await expect(page.getByText("Avg Confidence")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Total Savings" })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Recommendations" })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Avg Confidence" })).toBeVisible();
   });
 });

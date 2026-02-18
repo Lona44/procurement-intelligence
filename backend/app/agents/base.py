@@ -275,14 +275,29 @@ def _make_analyze_node(agent_type: str):
         summary = DataSummary(**state["summary"])
         preferences = state.get("preferences", "")
 
-        if MOCK_AGENTS or not OPENAI_API_KEY:
-            logger.info("Agent '%s' using mock results", agent_type)
+        mock = False
+        mock_reason = ""
+
+        if MOCK_AGENTS:
+            mock = True
+            mock_reason = "MOCK_AGENTS is enabled"
+            logger.info("Agent '%s' using mock results (MOCK_AGENTS=true)", agent_type)
+            result = MOCK_RESULTS[agent_type]
+        elif not OPENAI_API_KEY and not AZURE_OPENAI_ENDPOINT:
+            mock = True
+            mock_reason = "No API key configured"
+            logger.warning(
+                "Agent '%s' falling back to mock results — "
+                "set OPENAI_API_KEY or AZURE_OPENAI_ENDPOINT in .env",
+                agent_type,
+            )
             result = MOCK_RESULTS[agent_type]
         else:
+            provider = "Azure OpenAI" if _is_azure() else f"OpenAI ({OPENAI_MODEL})"
             logger.info(
-                "Agent '%s' calling OpenAI (%s)%s",
+                "Agent '%s' calling %s%s",
                 agent_type,
-                OPENAI_MODEL,
+                provider,
                 " with preferences" if preferences else "",
             )
             try:
@@ -292,16 +307,17 @@ def _make_analyze_node(agent_type: str):
                 raise
 
         result_dict = result.model_dump()
-        return {
-            "events": [
-                {
-                    "agent": agent_type,
-                    "status": "complete",
-                    "progress": 100,
-                    "result": result_dict,
-                }
-            ]
+        event: dict = {
+            "agent": agent_type,
+            "status": "complete",
+            "progress": 100,
+            "result": result_dict,
         }
+        if mock:
+            event["mock"] = True
+            event["mock_reason"] = mock_reason
+
+        return {"events": [event]}
 
     node.__name__ = f"{agent_type}_analyze"
     return node

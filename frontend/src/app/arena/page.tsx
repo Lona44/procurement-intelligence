@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAtom } from "jotai";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { sessionIdAtom, agentAtomFamily, arenaStartedAtom } from "@/store/atoms";
+import { sessionIdAtom, agentAtomFamily, arenaStartedAtom, mockModeAtom } from "@/store/atoms";
 import { connectSSE } from "@/lib/sse";
 import { EASE, ANIM } from "@/lib/constants";
 import ArenaBoard from "@/components/ArenaBoard";
@@ -21,8 +21,12 @@ function ArenaContent() {
   const [, setAggressive] = useAtom(agentAtomFamily("aggressive"));
   const [, setBalanced] = useAtom(agentAtomFamily("balanced"));
   const [arenaStarted, setArenaStarted] = useAtom(arenaStartedAtom);
+  const [, setMockMode] = useAtom(mockModeAtom);
   const startedRef = useRef(arenaStarted);
   const cleanupRef = useRef<(() => void) | null>(null);
+
+  // Derive a stable session ID string (atom takes priority, URL param as fallback)
+  const resolvedSessionId = sessionId || searchParams.get("session") || "";
 
   const setters = useMemo<Record<AgentType, typeof setConservative>>(
     () => ({
@@ -59,9 +63,12 @@ function ArenaContent() {
           total_savings: event.result!.total_savings,
           summary: event.result!.summary,
         }));
+        if (event.mock) {
+          setMockMode({ active: true, reason: event.mock_reason || "Mock mode" });
+        }
       }
     },
-    [setters]
+    [setters, setMockMode]
   );
 
   useEffect(() => {
@@ -80,11 +87,11 @@ function ArenaContent() {
   }, [arenaStarted]);
 
   useEffect(() => {
-    const sid = sessionId || searchParams.get("session");
-    if (!sid || startedRef.current) return;
+    if (!resolvedSessionId || startedRef.current) return;
 
     startedRef.current = true;
     setArenaStarted(true);
+    setMockMode({ active: false, reason: "" });
 
     // Reset agent states
     AGENT_TYPES.forEach((type) => {
@@ -100,7 +107,7 @@ function ArenaContent() {
     });
 
     cleanupRef.current = connectSSE(
-      sid,
+      resolvedSessionId,
       handleEvent,
       () => {
         // done
@@ -118,9 +125,10 @@ function ArenaContent() {
 
     return () => {
       cleanupRef.current?.();
+      startedRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId, searchParams]);
+  }, [resolvedSessionId]);
 
   return (
     <main className="min-h-screen bg-grid p-6 lg:p-8 max-w-[1400px] mx-auto">

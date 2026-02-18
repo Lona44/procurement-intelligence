@@ -68,6 +68,8 @@ export interface SSEEvent {
     total_savings: number;
     summary: string;
   };
+  mock?: boolean;
+  mock_reason?: string;
 }
 
 export interface Votes {

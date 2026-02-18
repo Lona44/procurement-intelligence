@@ -34,6 +34,12 @@ export const uploadMetaAtom = atom<UploadResponse | null>(null);
 
 export const mappingsConfirmedAtom = atom<boolean>(false);
 
+/** Tracks whether the backend returned mock results (and why). */
+export const mockModeAtom = atom<{ active: boolean; reason: string }>({
+  active: false,
+  reason: "",
+});
+
 /** Derived atom — true when all three agents have status "complete". */
 export const allAgentsCompleteAtom = atom<boolean>((get) => {
   const types: AgentType[] = ["conservative", "aggressive", "balanced"];

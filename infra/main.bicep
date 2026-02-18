@@ -1,6 +1,13 @@
 // ---------------------------------------------------------------------------
 // Agent Arena Battle — Azure Infrastructure
-// Deploys: Container Apps (backend) + Static Web App (frontend)
+// Deploys: Container Apps (backend + frontend) with Log Analytics
+//
+// Deploy in two steps:
+//   1. Deploy backend first to get its FQDN
+//   2. Build the frontend image with NEXT_PUBLIC_API_URL set to the backend FQDN
+//   3. Update this deployment with the real frontend image
+//
+// See README.md "Cloud Deployment" section for full instructions.
 // ---------------------------------------------------------------------------
 
 @description('Azure region for all resources')
@@ -34,6 +41,9 @@ param azureOpenaiDeployment string = ''
 
 @description('Whether to use mock agents (no real API calls)')
 param mockAgents string = 'true'
+
+@description('Allowed CORS origins for the backend (defaults to the frontend FQDN)')
+param corsOrigins string = ''
 
 // ---------------------------------------------------------------------------
 // Log Analytics workspace (required by Container Apps Environment)
@@ -78,7 +88,7 @@ resource backendApp 'Microsoft.App/containerApps@2024-03-01' = {
         targetPort: 8000
         transport: 'http'
         corsPolicy: {
-          allowedOrigins: ['*']
+          allowedOrigins: corsOrigins != '' ? [corsOrigins] : ['*']
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
           allowedHeaders: ['*']
           exposeHeaders: ['Content-Disposition']
@@ -124,6 +134,9 @@ resource backendApp 'Microsoft.App/containerApps@2024-03-01' = {
 
 // ---------------------------------------------------------------------------
 // Frontend Container App (Next.js standalone)
+//
+// IMPORTANT: The frontend image must be built with the correct backend URL
+// baked in via the NEXT_PUBLIC_API_URL build arg. See deploy instructions.
 // ---------------------------------------------------------------------------
 resource frontendApp 'Microsoft.App/containerApps@2024-03-01' = {
   name: 'ca-arena-frontend-${envName}'

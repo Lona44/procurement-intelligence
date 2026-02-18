@@ -3,7 +3,7 @@
 import { useAtom } from "jotai";
 import { sessionIdAtom, votesAtom, votedRecsAtom } from "@/store/atoms";
 import { castVote } from "@/lib/api";
-import type { AgentType, Recommendation, Votes } from "@/types";
+import type { AgentType, Recommendation } from "@/types";
 
 interface VotePanelProps {
   agentType: AgentType;
@@ -29,7 +29,7 @@ export default function VotePanel({ agentType, recommendation }: VotePanelProps)
         recommendation.title,
         recommendation.description
       );
-      setVotes(res.votes as Votes);
+      setVotes(res.votes);
       setVotedRecs((prev) => [...prev, { agentType, recommendationId: recommendation.id }]);
     } catch (err) {
       console.warn("[VotePanel] Vote failed:", err);

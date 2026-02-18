@@ -2,7 +2,7 @@
 
 import { useAtomValue } from "jotai";
 import { motion } from "framer-motion";
-import { votesAtom, agentAtomFamily } from "@/store/atoms";
+import { votesAtom, allAgentsCompleteAtom } from "@/store/atoms";
 import { AGENT_CONFIG, EASE } from "@/lib/constants";
 import type { AgentType } from "@/types";
 
@@ -44,14 +44,7 @@ function getLeadingAgent(votes: Record<AgentType, number>): AgentType | "tie" {
 
 export default function BehaviouralInsight() {
   const votes = useAtomValue(votesAtom);
-  const conservativeState = useAtomValue(agentAtomFamily("conservative"));
-  const aggressiveState = useAtomValue(agentAtomFamily("aggressive"));
-  const balancedState = useAtomValue(agentAtomFamily("balanced"));
-
-  const allComplete =
-    conservativeState.status === "complete" &&
-    aggressiveState.status === "complete" &&
-    balancedState.status === "complete";
+  const allComplete = useAtomValue(allAgentsCompleteAtom);
 
   const totalVotes = votes.conservative + votes.aggressive + votes.balanced;
 

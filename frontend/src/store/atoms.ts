@@ -33,3 +33,9 @@ export const dataSummaryAtom = atom<DataSummary | null>(null);
 export const uploadMetaAtom = atom<UploadResponse | null>(null);
 
 export const mappingsConfirmedAtom = atom<boolean>(false);
+
+/** Derived atom — true when all three agents have status "complete". */
+export const allAgentsCompleteAtom = atom<boolean>((get) => {
+  const types: AgentType[] = ["conservative", "aggressive", "balanced"];
+  return types.every((t) => get(agentAtomFamily(t)).status === "complete");
+});

@@ -1,4 +1,16 @@
+import type { DataSummary, Votes } from "@/types";
 import { API_BASE } from "./constants";
+
+/** Typed fetch wrapper — sends JSON and returns parsed JSON. */
+async function fetchJson<T>(
+  path: string,
+  init?: RequestInit,
+  errorMsg = "Request failed"
+): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, init);
+  if (!res.ok) throw new Error(errorMsg);
+  return res.json() as Promise<T>;
+}
 
 export async function uploadCSV(
   file: File,
@@ -37,9 +49,11 @@ export async function uploadCSV(
 }
 
 export async function startDemo(): Promise<{ session_id: string }> {
-  const res = await fetch(`${API_BASE}/api/demo/start`, { method: "POST" });
-  if (!res.ok) throw new Error("Demo start failed");
-  return res.json();
+  return fetchJson<{ session_id: string }>(
+    "/api/demo/start",
+    { method: "POST" },
+    "Demo start failed"
+  );
 }
 
 export async function castVote(
@@ -49,40 +63,47 @@ export async function castVote(
   recommendationTitle: string,
   recommendationDescription: string
 ) {
-  const res = await fetch(`${API_BASE}/api/vote`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      session_id: sessionId,
-      agent_type: agentType,
-      recommendation_id: recommendationId,
-      recommendation_title: recommendationTitle,
-      recommendation_description: recommendationDescription,
-    }),
-  });
-
-  if (!res.ok) throw new Error("Vote failed");
-  return res.json();
+  return fetchJson<{ votes: Votes }>(
+    "/api/vote",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id: sessionId,
+        agent_type: agentType,
+        recommendation_id: recommendationId,
+        recommendation_title: recommendationTitle,
+        recommendation_description: recommendationDescription,
+      }),
+    },
+    "Vote failed"
+  );
 }
 
 export async function getVotes(sessionId: string) {
-  const res = await fetch(`${API_BASE}/api/votes/${sessionId}`);
-  if (!res.ok) throw new Error("Failed to get votes");
-  return res.json();
+  return fetchJson<{ votes: Votes }>(`/api/votes/${sessionId}`, undefined, "Failed to get votes");
 }
 
 export async function getSessions() {
-  const res = await fetch(`${API_BASE}/api/sessions`);
-  if (!res.ok) throw new Error("Failed to get sessions");
-  return res.json();
+  return fetchJson<{
+    sessions: {
+      session_id: string;
+      filename: string;
+      created_at: string;
+      row_count: number;
+      total_spend: number;
+      vote_count: number;
+      has_report: boolean;
+    }[];
+  }>(`/api/sessions`, undefined, "Failed to get sessions");
 }
 
 export async function deleteSession(sessionId: string) {
-  const res = await fetch(`${API_BASE}/api/sessions/${sessionId}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) throw new Error("Failed to delete session");
-  return res.json();
+  return fetchJson<{ status: string }>(
+    `/api/sessions/${sessionId}`,
+    { method: "DELETE" },
+    "Failed to delete session"
+  );
 }
 
 export async function getDataSummary(sessionId: string, startDate?: string, endDate?: string) {
@@ -90,9 +111,11 @@ export async function getDataSummary(sessionId: string, startDate?: string, endD
   if (startDate) params.set("start_date", startDate);
   if (endDate) params.set("end_date", endDate);
   const qs = params.toString();
-  const res = await fetch(`${API_BASE}/api/summary/${sessionId}${qs ? `?${qs}` : ""}`);
-  if (!res.ok) throw new Error("Failed to get data summary");
-  return res.json();
+  return fetchJson<DataSummary>(
+    `/api/summary/${sessionId}${qs ? `?${qs}` : ""}`,
+    undefined,
+    "Failed to get data summary"
+  );
 }
 
 export async function confirmMappings(sessionId: string, mappings: Record<string, string>) {

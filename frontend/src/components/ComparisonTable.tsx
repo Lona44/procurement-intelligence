@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAtom } from "jotai";
-import { agentAtomFamily } from "@/store/atoms";
+import { useAtom, useAtomValue } from "jotai";
+import { agentAtomFamily, allAgentsCompleteAtom } from "@/store/atoms";
 import { AGENT_CONFIG } from "@/lib/constants";
 import type { AgentType } from "@/types";
 
@@ -22,7 +22,7 @@ export default function ComparisonTable() {
     [conservative, aggressive, balanced]
   );
 
-  const allComplete = Object.values(states).every((s) => s.status === "complete");
+  const allComplete = useAtomValue(allAgentsCompleteAtom);
 
   const rows = useMemo(() => {
     if (!allComplete) return [];

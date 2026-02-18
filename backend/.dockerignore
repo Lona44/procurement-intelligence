@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+venv/
+.env
+.env.*
+tests/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+data/*.csv
+data/*.xlsx

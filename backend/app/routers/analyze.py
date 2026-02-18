@@ -3,11 +3,12 @@
 import json
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 
 from app.agents.base import build_arena_graph
-from app.services.session_store import build_preference_context, get_session
+from app.routers.dependencies import get_session_or_404
+from app.services.session_store import build_preference_context
 
 logger = logging.getLogger("arena.analyze")
 router = APIRouter()
@@ -15,10 +16,7 @@ router = APIRouter()
 
 @router.get("/api/analyze/{session_id}")
 async def analyze(session_id: str):
-    session = get_session(session_id)
-    if not session:
-        logger.warning("Analyze request for unknown session: %s", session_id)
-        raise HTTPException(status_code=404, detail="Session not found")
+    session = get_session_or_404(session_id)
 
     summary = session.get("active_summary") or session["summary"]
     preferences = build_preference_context(session_id)

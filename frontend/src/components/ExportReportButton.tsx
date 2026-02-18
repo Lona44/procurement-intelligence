@@ -3,24 +3,14 @@
 import { useState, useCallback } from "react";
 import { useAtom } from "jotai";
 import { motion } from "framer-motion";
-import { sessionIdAtom, agentAtomFamily } from "@/store/atoms";
+import { sessionIdAtom, allAgentsCompleteAtom } from "@/store/atoms";
 import { exportReport } from "@/lib/api";
 import { ANIM } from "@/lib/constants";
-import type { AgentType } from "@/types";
-
-const AGENT_TYPES: AgentType[] = ["conservative", "aggressive", "balanced"];
 
 export default function ExportReportButton() {
   const [sessionId] = useAtom(sessionIdAtom);
-  const [conservative] = useAtom(agentAtomFamily("conservative"));
-  const [aggressive] = useAtom(agentAtomFamily("aggressive"));
-  const [balanced] = useAtom(agentAtomFamily("balanced"));
+  const [allComplete] = useAtom(allAgentsCompleteAtom);
   const [loading, setLoading] = useState(false);
-
-  const allComplete = AGENT_TYPES.every((type) => {
-    const agent = { conservative, aggressive, balanced }[type];
-    return agent.status === "complete";
-  });
 
   const handleExport = useCallback(async () => {
     if (!sessionId || loading) return;

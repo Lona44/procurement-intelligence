@@ -1,4 +1,5 @@
 """Generate synthetic procurement spend data with embedded patterns for agents to discover."""
+
 import csv
 import random
 import os
@@ -8,27 +9,26 @@ random.seed(42)
 
 VENDORS = {
     "Office Supplies": [
-        "Staples", "Office Depot", "OfficeMax", "Staples Express", "Office Depot Online"
+        "Staples",
+        "Office Depot",
+        "OfficeMax",
+        "Staples Express",
+        "Office Depot Online",
     ],
-    "Cloud Services": [
-        "AWS", "Microsoft Azure", "Google Cloud", "DigitalOcean"
-    ],
+    "Cloud Services": ["AWS", "Microsoft Azure", "Google Cloud", "DigitalOcean"],
     "Software Licenses": [
-        "Salesforce", "HubSpot", "Slack", "Zoom", "Microsoft 365",
-        "Zoom Video", "Slack Technologies"
+        "Salesforce",
+        "HubSpot",
+        "Slack",
+        "Zoom",
+        "Microsoft 365",
+        "Zoom Video",
+        "Slack Technologies",
     ],
-    "Consulting": [
-        "Deloitte", "McKinsey", "Accenture", "PwC"
-    ],
-    "Travel": [
-        "United Airlines", "Delta Airlines", "Marriott", "Hilton", "Enterprise Rent-A-Car"
-    ],
-    "Marketing": [
-        "Google Ads", "Facebook Ads", "HubSpot Marketing", "Mailchimp"
-    ],
-    "Facilities": [
-        "CBRE", "JLL", "Cushman & Wakefield", "ABM Industries"
-    ],
+    "Consulting": ["Deloitte", "McKinsey", "Accenture", "PwC"],
+    "Travel": ["United Airlines", "Delta Airlines", "Marriott", "Hilton", "Enterprise Rent-A-Car"],
+    "Marketing": ["Google Ads", "Facebook Ads", "HubSpot Marketing", "Mailchimp"],
+    "Facilities": ["CBRE", "JLL", "Cushman & Wakefield", "ABM Industries"],
 }
 
 DEPARTMENTS = ["Engineering", "Sales", "Marketing", "Finance", "HR", "Operations"]
@@ -70,20 +70,24 @@ def generate_data(output_path: str, num_rows: int = 300):
         if vendor in ("Slack", "Slack Technologies") and department in ("Engineering", "Marketing"):
             amount = round(random.uniform(1000, 2500), 2)
 
-        rows.append({
-            "Date": date.strftime("%Y-%m-%d"),
-            "Vendor": vendor,
-            "Category": category,
-            "Amount": amount,
-            "Department": department,
-        })
+        rows.append(
+            {
+                "Date": date.strftime("%Y-%m-%d"),
+                "Vendor": vendor,
+                "Category": category,
+                "Amount": amount,
+                "Department": department,
+            }
+        )
 
     # Sort by date
     rows.sort(key=lambda r: r["Date"])
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Date", "Vendor", "Category", "Amount", "Department"])
+        writer = csv.DictWriter(
+            f, fieldnames=["Date", "Vendor", "Category", "Amount", "Department"]
+        )
         writer.writeheader()
         writer.writerows(rows)
 

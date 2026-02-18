@@ -10,6 +10,7 @@ from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 
 from app.config import MAX_UPLOAD_SIZE_BYTES, MAX_UPLOAD_SIZE_MB
 from app.models.schemas import ConfirmMappingsRequest, DataSummary, UploadResponse
+from app.routers.dependencies import get_session_or_404
 from app.services.data_processor import (
     apply_mappings_and_summarize,
     compute_column_stats,
@@ -17,7 +18,7 @@ from app.services.data_processor import (
     suggest_column_mappings,
     summarize_dataframe,
 )
-from app.services.session_store import delete_session, get_session, list_sessions, save_session
+from app.services.session_store import delete_session, list_sessions, save_session
 
 logger = logging.getLogger("arena.upload")
 router = APIRouter()
@@ -94,9 +95,7 @@ async def upload_file(file: UploadFile = File(...)):  # noqa: B008
 
 @router.post("/api/confirm-mappings", response_model=DataSummary)
 async def confirm_mappings(req: ConfirmMappingsRequest):
-    session = get_session(req.session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+    session = get_session_or_404(req.session_id)
 
     required_fields = {"date", "vendor", "category", "amount", "department"}
     provided = set(req.mappings.keys())
@@ -140,9 +139,7 @@ async def get_summary(
     start_date: str | None = Query(None),  # noqa: B008
     end_date: str | None = Query(None),  # noqa: B008
 ):
-    session = get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+    session = get_session_or_404(session_id)
 
     # When no date filters, clear any active filter and return the stored full summary
     if not start_date and not end_date:

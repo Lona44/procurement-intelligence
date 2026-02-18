@@ -6,8 +6,9 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 
 from app.models.schemas import AgentResult, DataSummary
+from app.routers.dependencies import get_session_or_404
 from app.services.report_generator import generate_report
-from app.services.session_store import get_session, get_voted_recommendation_ids
+from app.services.session_store import get_voted_recommendation_ids
 
 logger = logging.getLogger("arena.report")
 router = APIRouter()
@@ -15,9 +16,7 @@ router = APIRouter()
 
 @router.get("/api/report/{session_id}")
 async def export_report(session_id: str):
-    session = get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+    session = get_session_or_404(session_id)
 
     summary_data = session.get("active_summary") or session.get("summary")
     if not summary_data:
